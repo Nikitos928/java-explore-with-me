@@ -6,7 +6,6 @@ import lombok.Value;
 
 @Data
 @Value
-@Builder
 public class HitDto {
     String app;
     String uri;
