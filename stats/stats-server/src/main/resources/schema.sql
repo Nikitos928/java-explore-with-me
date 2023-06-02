@@ -5,5 +5,8 @@ create table if not exists hits
     uri       varchar(100)                             NOT NULL,
     ip        varchar(100)                             NOT NULL,
     timestamp TIMESTAMP,
-    CONSTRAINT pk_hit PRIMARY KEY (id)
+    CONSTRAINT pk_hit PRIMARY KEY (id),
+    CREATE INDEX index1 ON hits (app),
+    CREATE INDEX index2 ON hits (uri);
+
 );
