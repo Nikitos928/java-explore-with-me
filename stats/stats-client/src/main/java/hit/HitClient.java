@@ -2,9 +2,9 @@ package hit;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.practicum.dto.HitDto;
-import ru.practicum.dto.HitInDto;
-import client.BaseClient;
+import ru.practicum.hit.dto.HitDto;
+import ru.practicum.hit.dto.HitInDto;
+import hit.client.BaseClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;

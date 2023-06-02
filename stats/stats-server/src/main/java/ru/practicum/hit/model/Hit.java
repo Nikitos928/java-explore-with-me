@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Table(name = "hits")
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Hit {

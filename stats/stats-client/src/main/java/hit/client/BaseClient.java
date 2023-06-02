@@ -1,4 +1,4 @@
-package client;
+package hit.client;
 
 import java.util.Map;
 
@@ -10,7 +10,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-public class BaseClient {
+public abstract class BaseClient {
 
     protected final RestTemplate rest;
 

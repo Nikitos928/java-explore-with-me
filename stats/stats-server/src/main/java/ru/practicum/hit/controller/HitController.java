@@ -1,8 +1,8 @@
 package ru.practicum.hit.controller;
 
 import org.springframework.http.HttpStatus;
-import ru.practicum.dto.HitDto;
-import ru.practicum.dto.HitInDto;
+import ru.practicum.hit.dto.HitDto;
+import ru.practicum.hit.dto.HitInDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;

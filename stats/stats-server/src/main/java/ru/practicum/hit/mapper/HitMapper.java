@@ -1,15 +1,18 @@
 package ru.practicum.hit.mapper;
 
-import ru.practicum.dto.HitInDto;
+import lombok.experimental.UtilityClass;
+import ru.practicum.hit.dto.HitInDto;
 import ru.practicum.hit.model.Hit;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
+@UtilityClass
 public class HitMapper {
     public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static Hit mapToHit(HitInDto hitDto) {
+    public Hit mapToHit(HitInDto hitDto) {
         Hit hit = new Hit();
         hit.setId(hitDto.getId());
         hit.setIp(hitDto.getIp());
@@ -19,13 +22,13 @@ public class HitMapper {
         return hit;
     }
 
-    public static HitInDto mapToHitInDto(Hit hit) {
-        HitInDto hitDto = new HitInDto();
-        hitDto.setId(hit.getId());
-        hitDto.setIp(hit.getIp());
-        hitDto.setUri(hit.getUri());
-        hitDto.setApp(hit.getApp());
-        hitDto.setTimestamp(hit.getTimestamp().toString());
-        return hitDto;
+    public HitInDto mapToHitInDto(Hit hit) {
+        return HitInDto.builder()
+                .id(hit.getId())
+                .ip(hit.getIp())
+                .uri(hit.getUri())
+                .app(hit.getApp())
+                .timestamp(hit.getTimestamp().toString())
+                .build();
     }
 }

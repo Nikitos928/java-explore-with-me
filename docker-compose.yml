@@ -29,6 +29,7 @@ services:
         - "8080:8080"
       depends_on:
         - ewm-db
+        - stats-server
       environment:
         - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/exploreit
         - SPRING_DATASOURCE_USER=shareit
