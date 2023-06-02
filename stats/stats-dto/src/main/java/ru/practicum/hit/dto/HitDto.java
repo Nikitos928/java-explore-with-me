@@ -1,6 +1,5 @@
 package ru.practicum.hit.dto;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.Value;
 
