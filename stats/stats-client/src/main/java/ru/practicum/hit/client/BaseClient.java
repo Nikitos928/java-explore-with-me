@@ -1,4 +1,4 @@
-package hit.client;
+package ru.practicum.hit.client;
 
 import java.util.Map;
 

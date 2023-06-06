@@ -7,3 +7,7 @@ create table if not exists hits
     timestamp TIMESTAMP,
     CONSTRAINT pk_hit PRIMARY KEY (id)
 );
+
+ CREATE INDEX index1 ON hits (app);
+ CREATE INDEX index2 ON hits (uri);
+ CREATE INDEX index3 ON hits (timestamp);

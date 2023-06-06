@@ -1,10 +1,10 @@
-package hit;
+package ru.practicum.hit;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.practicum.hit.client.BaseClient;
 import ru.practicum.hit.dto.HitDto;
 import ru.practicum.hit.dto.HitInDto;
-import hit.client.BaseClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -43,6 +43,6 @@ public class HitClient extends BaseClient {
     }
 
     public ResponseEntity<Object> saveNewHit(HitInDto hitDto) {
-        return post("/hit", hitDto);
+        return post("/ru/practicum/hit", hitDto);
     }
 }
