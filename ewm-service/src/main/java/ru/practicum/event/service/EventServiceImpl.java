@@ -9,12 +9,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.category.model.Category;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.category.mapper.CategoryMapper;
+import ru.practicum.category.model.Category;
+import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.common.*;
-
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.dto.EventShortDto;
@@ -24,17 +23,21 @@ import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.RequestException;
 import ru.practicum.hit.HitClient;
 import ru.practicum.hit.dto.HitDto;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.repository.RequestRepository;
+import ru.practicum.user.dto.UserShortDto;
+import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
-import ru.practicum.user.mapper.UserMapper;
-import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -144,7 +147,7 @@ public class EventServiceImpl implements EventService {
         if (eventNewDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
             log.info("Дата и время события {} - не может быть раньше, чем через два часа от текущего момента",
                     eventNewDto.getEventDate());
-            throw new ConflictException("Дата и время события не может быть раньше, чем через два часа от текущего момента");
+            throw new RequestException("Дата и время события не может быть раньше, чем через два часа от текущего момента");
         }
 
         User user = checkingExistUser(userId);
@@ -223,7 +226,7 @@ public class EventServiceImpl implements EventService {
     private Event checkingExistEventByUserId(int userId, int eventId) {
         Event event = checkingExistEvent(eventId);
         if (event.getInitiator().getId() != userId) {
-            throw new ConflictException("Пользователь не инициатор события.");
+            throw new RequestException("Пользователь не инициатор события.");
         }
         return event;
     }
@@ -238,7 +241,7 @@ public class EventServiceImpl implements EventService {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now())) {
                 log.info("Нельзя изменить дату события {} на уже наступившую.",
                         eventUpdateDto.getEventDate());
-                throw new ConflictException("Нельзя изменить дату события на уже наступившую.");
+                throw new RequestException("Нельзя изменить дату события на уже наступившую.");
             }
         }
         if (eventUpdateDto.getAnnotation() != null) {

@@ -6,10 +6,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.common.State;
-import ru.practicum.event.service.EventService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventUpdateDto;
+import ru.practicum.event.service.EventService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -47,7 +48,7 @@ public class AdminEventController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable int eventId,
-                                    @RequestBody EventUpdateDto eventUpdateDto) {
+                                    @Valid @RequestBody EventUpdateDto eventUpdateDto) {
         log.info("API AdminEvent. PATCH: eventId={}, eventUpdateDto={}", eventId, eventUpdateDto);
 
         EventFullDto updateEvent = eventService.updateAdminEvent(eventId, eventUpdateDto);
