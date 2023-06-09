@@ -20,6 +20,6 @@ public class CompilationNewDto {
     private Boolean pinned;
     @NotNull(message = "CompilationNewDto. Field: title не задано")
     @NotBlank(message = "CompilationDto. Field: title не может быть пустым или содержать только пробелы")
-    @Size(max = 50)
+    @Size(max = 51)
     private String title;
 }

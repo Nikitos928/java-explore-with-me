@@ -9,8 +9,12 @@ import ru.practicum.event.model.Event;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Integer> {
+
+    Optional<Event> findByIdAndState(long eventId, State stateEvent);
+
     List<Event> findEventByIdIn(List<Integer> eventIds);
 
     List<Event> findEventByInitiatorId(int userId, Pageable pageable);

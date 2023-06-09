@@ -79,7 +79,7 @@ public class EventServiceImpl implements EventService {
             text = text.toLowerCase();
         }
         List<Event> events = eventRepository.getEventsWithSort(categories, start, end, text, paid, pageable);
-        hitClient.saveNewHit(ip, "/events", app);
+
 
         List<EventFullDto> eventFullDtos = makeEventFullDtoList(events);
         if (!onlyAvailable) {
@@ -108,19 +108,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getPublicEventById(int eventId, String ip) {
-        Event event = checkingExistEvent(eventId);
+        Event event = eventRepository.findByIdAndState(eventId, State.PUBLISHED)
+                .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено."));
+
         hitClient.saveNewHit(ip, "/events/" + eventId, app);
 
-        if (event.getState() == State.PUBLISHED) {
-            EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
+        EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
-            eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
-            eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-            return eventFullDto;
-        } else {
-            log.error("Событие не опубликовано!");
-            throw new ConflictException("Событие не опубликовано!");
-        }
+        eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
+        eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        return eventFullDto;
     }
 
     @Override
@@ -172,7 +169,7 @@ public class EventServiceImpl implements EventService {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
                 log.info("Дата и время события {} - не может быть раньше, чем через два часа от текущего момента",
                         eventUpdateDto.getEventDate());
-                throw new ConflictException("Дата и время события не может быть раньше, чем через два часа от текущего момента");
+                throw new RequestException("Дата и время события не может быть раньше, чем через два часа от текущего момента");
             }
         }
         if (event.getState() == State.PUBLISHED) {

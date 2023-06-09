@@ -14,7 +14,9 @@ import ru.practicum.user.mapper.UserMapper;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -34,7 +36,8 @@ public class UserServiceImpl implements UserService {
         } else {
             Page<User> users = userRepository.getUsersByIds(ids, pageable);
             log.info("UserService: Данные о пользователях по списку={}, сортировка по name", ids);
-            return UserMapper.mapToListUserDto(users);
+            return UserMapper.mapToListUserDto(users).stream().sorted(Comparator.comparing(UserDto::getId))
+                    .collect(Collectors.toList());
         }
     }
 

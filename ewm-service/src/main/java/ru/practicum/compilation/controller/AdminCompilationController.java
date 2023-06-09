@@ -23,6 +23,9 @@ public class AdminCompilationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public CompilationDto saveNewCompilation(@Valid @RequestBody CompilationNewDto compilationNewDto) {
+        if (compilationNewDto.getPinned() == null){
+            compilationNewDto.setPinned(false);
+        }
         log.info("API AdminCompilation. POST: параметры compilationNewDto={}", compilationNewDto);
         CompilationDto compilationDto = compilationService.saveNewCompilation(compilationNewDto);
         log.info("API AdminCompilation. POST: Добавлена новая подборка  {}", compilationDto);
