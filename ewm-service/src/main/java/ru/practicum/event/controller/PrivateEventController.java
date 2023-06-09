@@ -48,13 +48,13 @@ public class PrivateEventController {
     @PostMapping("/{userId}/events")
     public EventFullDto saveNewEvent(@PathVariable int userId,
                                      @Valid @RequestBody EventNewDto eventNewDto) {
-        if (eventNewDto.getPaid() == null){
+        if (eventNewDto.getPaid() == null) {
             eventNewDto.setPaid(false);
         }
-        if (eventNewDto.getParticipantLimit() == null){
+        if (eventNewDto.getParticipantLimit() == null) {
             eventNewDto.setParticipantLimit(0);
         }
-        if (eventNewDto.getRequestModeration() == null){
+        if (eventNewDto.getRequestModeration() == null) {
             eventNewDto.setRequestModeration(true);
         }
         log.info("API PrivateEvent. POST параметры: userId={}, eventNewDto={}", userId, eventNewDto);

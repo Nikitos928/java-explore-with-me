@@ -5,10 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.compilation.servise.CompilationService;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.compilation.dto.CompilationUpdateDto;
+import ru.practicum.compilation.servise.CompilationService;
 
 import javax.validation.Valid;
 
@@ -23,7 +23,7 @@ public class AdminCompilationController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public CompilationDto saveNewCompilation(@Valid @RequestBody CompilationNewDto compilationNewDto) {
-        if (compilationNewDto.getPinned() == null){
+        if (compilationNewDto.getPinned() == null) {
             compilationNewDto.setPinned(false);
         }
         log.info("API AdminCompilation. POST: параметры compilationNewDto={}", compilationNewDto);
