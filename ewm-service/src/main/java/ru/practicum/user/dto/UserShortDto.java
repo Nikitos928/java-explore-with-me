@@ -1,4 +1,4 @@
-package ru.practicum.hit.dto;
+package ru.practicum.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class HitDto {
-    String app;
-    String uri;
-    Long hits;
+public class UserShortDto {
+    private Integer id;
+    private String name;
 }

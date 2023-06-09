@@ -7,6 +7,7 @@ import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 
 @Data
 @Value
@@ -23,5 +24,5 @@ public class HitInDto {
     @Size(max = 250)
     String app;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    String timestamp;
+    LocalDateTime timestamp;
 }
