@@ -291,8 +291,10 @@ public class EventServiceImpl implements EventService {
                 }
             }
         }
-        if (eventUpdateDto.getStateAction().equals(StateAction.SEND_TO_REVIEW.toString())) {
-            event.setState(State.PENDING);
+        if (eventUpdateDto.getStateAction() != null) {
+            if (eventUpdateDto.getStateAction().equals(StateAction.SEND_TO_REVIEW.toString())) {
+                event.setState(State.PENDING);
+            }
         }
 
         if (eventUpdateDto.getStateAction().equals(StateAction.PUBLISH_EVENT.toString())) {
