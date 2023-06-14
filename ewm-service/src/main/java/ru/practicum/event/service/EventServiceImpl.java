@@ -111,7 +111,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено."));
 
-        if (!event.getState().equals(State.PUBLISHED)){
+        if (!event.getState().equals(State.PUBLISHED)) {
             throw new NotFoundException("Событие с id=" + eventId + " не опубликовано.");
         }
 
