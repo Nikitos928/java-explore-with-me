@@ -65,7 +65,7 @@ public class CompilationServiceImpl implements CompilationService {
             updateCompilation.setTitle(compilationUpdateDto.getTitle());
         }
 
-        if (!compilationUpdateDto.getEvents().isEmpty() && (compilationUpdateDto.getEvents() != null)) {
+        if ((compilationUpdateDto.getEvents() != null) && !compilationUpdateDto.getEvents().isEmpty()) {
             updateCompilation.setEvents(eventRepository.findEventByIdIn(compilationUpdateDto.getEvents()));
         }
 

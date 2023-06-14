@@ -198,7 +198,7 @@ public class EventServiceImpl implements EventService {
                     event.setState(State.CANCELED);
                     break;
                 default:
-                    throw new RequestException("Invalid StateAction status");
+                    throw new RequestException("Не корректный статус");
             }
         }
 
@@ -299,15 +299,7 @@ public class EventServiceImpl implements EventService {
                 event.setTitle(eventUpdateDto.getTitle());
             }
         }
-        if (eventUpdateDto.getStateAction() != null) {
-            if (eventUpdateDto.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
-                if (event.getState().equals(State.PENDING)) {
-                    event.setState(State.CANCELED);
-                } else {
-                    throw new ConflictException("Отменить можно только событие в состоянии ожидания модерации.");
-                }
-            }
-        }
+
         if (eventUpdateDto.getStateAction() != null) {
             if (eventUpdateDto.getStateAction().equals(SEND_TO_REVIEW)) {
                 event.setState(State.PENDING);
