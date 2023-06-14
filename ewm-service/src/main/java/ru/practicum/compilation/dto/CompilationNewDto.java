@@ -14,12 +14,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompilationNewDto {
-    @NotNull(message = "CompilationNewDto. Field: events не задано")
+    //@NotNull(message = "CompilationNewDto. Field: events не задано")
     private List<Integer> events;
     @Value("false")
     private Boolean pinned;
     @NotNull(message = "CompilationNewDto. Field: title не задано")
     @NotBlank(message = "CompilationDto. Field: title не может быть пустым или содержать только пробелы")
-    @Size(max = 51)
+    @Size(max = 50)
     private String title;
 }

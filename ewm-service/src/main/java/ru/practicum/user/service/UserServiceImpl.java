@@ -32,7 +32,8 @@ public class UserServiceImpl implements UserService {
         if (ids == null || ids.length == 0) {
             Page<User> users = userRepository.findAll(pageable);
             log.info("UserService: Данные о всех пользователях, сортировка по name");
-            return UserMapper.mapToListUserDto(users);
+            return UserMapper.mapToListUserDto(users).stream().sorted(Comparator.comparing(UserDto::getId))
+                    .collect(Collectors.toList());
         } else {
             Page<User> users = userRepository.getUsersByIds(ids, pageable);
             log.info("UserService: Данные о пользователях по списку={}, сортировка по name", ids);
