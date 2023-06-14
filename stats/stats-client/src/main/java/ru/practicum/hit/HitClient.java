@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static org.springframework.http.RequestEntity.post;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -55,6 +57,6 @@ public class HitClient {
     public void saveNewHit(String ip, String uri, String app) {
         HitInDto hitInDto = HitInDto.builder().id(0L).ip(ip).uri(uri).app(app).timestamp(LocalDateTime.now()).build();
         log.info("HitClient. Запрос на сохранение статистики: {}", hitInDto);
-        restTemplate.postForLocation(local + "/hit", hitInDto);
+        post("/hit", hitInDto);
     }
 }
