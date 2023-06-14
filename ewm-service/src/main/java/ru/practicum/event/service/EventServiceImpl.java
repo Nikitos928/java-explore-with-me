@@ -300,7 +300,7 @@ public class EventServiceImpl implements EventService {
             }
         }
         if (eventUpdateDto.getStateAction() != null) {
-            if (eventUpdateDto.getStateAction().equals(StateAction.CANCEL_REVIEW.toString())) {
+            if (eventUpdateDto.getStateAction().equals(StateAction.CANCEL_REVIEW)) {
                 if (event.getState().equals(State.PENDING)) {
                     event.setState(State.CANCELED);
                 } else {
@@ -309,33 +309,35 @@ public class EventServiceImpl implements EventService {
             }
         }
         if (eventUpdateDto.getStateAction() != null) {
-            if (eventUpdateDto.getStateAction().equals(SEND_TO_REVIEW.toString())) {
+            if (eventUpdateDto.getStateAction().equals(SEND_TO_REVIEW)) {
                 event.setState(State.PENDING);
             }
         }
+        if (eventUpdateDto.getStateAction() != null) {
+            if (eventUpdateDto.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
+                if (event.getState() == State.PENDING) {
+                    event.setState(State.PUBLISHED);
+                    event.setPublishedOn(LocalDateTime.now());
 
-        if (eventUpdateDto.getStateAction().equals(StateAction.PUBLISH_EVENT.toString())) {
-            if (event.getState() == State.PENDING) {
-                event.setState(State.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
-
-            } else {
-                if (event.getState() == State.CANCELED) {
-                    log.error("Событие в состоянии CANCELED не может быть опубликовано.");
-                    throw new ConflictException("Событие в состоянии CANCELED не может быть опубликовано.");
-                }
-                if (event.getState() == State.PUBLISHED) {
-                    log.error("Событие уже опубликовано.");
-                    throw new ConflictException("Событие уже опубликовано.");
+                } else {
+                    if (event.getState() == State.CANCELED) {
+                        log.error("Событие в состоянии CANCELED не может быть опубликовано.");
+                        throw new ConflictException("Событие в состоянии CANCELED не может быть опубликовано.");
+                    }
+                    if (event.getState() == State.PUBLISHED) {
+                        log.error("Событие уже опубликовано.");
+                        throw new ConflictException("Событие уже опубликовано.");
+                    }
                 }
             }
         }
-
-        if (eventUpdateDto.getStateAction().equals(StateAction.REJECT_EVENT.toString())) {
-            if (event.getState() == State.PENDING) {
-                event.setState(State.CANCELED);
-            } else if (event.getState() == State.PUBLISHED) {
-                throw new ConflictException("Событие уже опубликовано.");
+        if (eventUpdateDto.getStateAction() != null) {
+            if (eventUpdateDto.getStateAction().equals(StateAction.REJECT_EVENT)) {
+                if (event.getState() == State.PENDING) {
+                    event.setState(State.CANCELED);
+                } else if (event.getState() == State.PUBLISHED) {
+                    throw new ConflictException("Событие уже опубликовано.");
+                }
             }
         }
     }
