@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.common.StateAction;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class EventUpdateDto {
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
-    private String stateAction;
+    private StateAction stateAction;
     @Size(min = 3, max = 120)
     private String title;
 }

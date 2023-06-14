@@ -40,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static ru.practicum.common.StateAction.SEND_TO_REVIEW;
+
+
 @Slf4j
 @Service
 @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -185,6 +188,20 @@ public class EventServiceImpl implements EventService {
             log.error("Нельзя изменить опубликованное событие.");
             throw new ConflictException("Нельзя изменить опубликованное событие.");
         }
+
+        if (eventUpdateDto.getStateAction() != null) {
+            switch (eventUpdateDto.getStateAction()) {
+                case SEND_TO_REVIEW:
+                    event.setState(State.PENDING);
+                    break;
+                case CANCEL_REVIEW:
+                    event.setState(State.CANCELED);
+                    break;
+                default:
+                    throw new RequestException("Invalid StateAction status");
+            }
+        }
+
         updateEvent(event, eventUpdateDto);
 
         eventRepository.save(event);
@@ -292,7 +309,7 @@ public class EventServiceImpl implements EventService {
             }
         }
         if (eventUpdateDto.getStateAction() != null) {
-            if (eventUpdateDto.getStateAction().equals(StateAction.SEND_TO_REVIEW.toString())) {
+            if (eventUpdateDto.getStateAction().equals(SEND_TO_REVIEW.toString())) {
                 event.setState(State.PENDING);
             }
         }
