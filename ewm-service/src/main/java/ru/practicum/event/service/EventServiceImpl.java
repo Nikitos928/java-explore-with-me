@@ -68,7 +68,7 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getPublicEventsWithSort(String text, List<Integer> categories, boolean paid,
                                                        LocalDateTime start, LocalDateTime end, boolean onlyAvailable,
                                                        SortMethod sortMethod, int from, int size, String ip) {
-        if (!end.isAfter(start)){
+        if (!end.isAfter(start)) {
             throw new RequestException("Дата окончания события не может быть раньше начала");
         }
         Pageable pageable;
