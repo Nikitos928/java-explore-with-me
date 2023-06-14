@@ -23,7 +23,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     @Query("SELECT e from Event e " +
             "WHERE (:categories is null OR e.category.id IN :categories) " +
-            "AND ((cast(:start as timestamp) Is null OR cast(:end as timestamp) Is null) " +
+            "OR ((cast(:start as timestamp) Is null OR cast(:end as timestamp) Is null) " +
             "OR (cast(:start as timestamp) Is Not Null AND cast(:end as timestamp) Is not null " +
             "AND e.eventDate BETWEEN :start AND :end)) " +
             "AND (:text is null OR (lower(e.annotation) like %:text% or lower(e.description) like %:text%)) " +
@@ -49,5 +49,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                    @Param("start") LocalDateTime start,
                                    @Param("end") LocalDateTime end,
                                    Pageable pageable);
+
 
 }

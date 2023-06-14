@@ -38,9 +38,7 @@ public class PublicEventController {
             @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero Integer from,
             @RequestParam(value = "size", defaultValue = "10") @Positive Integer size,
             HttpServletRequest request) {
-        if (size != null) {
-            size = 10;
-        }
+
         log.info("API PublicEvent. GET: параметры поиска: text={}, categories={}, paid={}, " +
                         "rangeStart={}, rangeEnd={},onlyAvailable={}, sort={}", text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort);
