@@ -201,6 +201,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto updateAdminEvent(int eventId, EventUpdateDto eventUpdateDto) {
         Event event = checkingExistEvent(eventId);
+
         if (eventUpdateDto.getEventDate() != null && event.getPublishedOn() != null) {
             if (eventUpdateDto.getEventDate().isAfter(event.getPublishedOn().plusHours(1))) {
                 log.info("Дата начала события {} - не может быть раньше, чем за час от даты публикации",
@@ -281,12 +282,13 @@ public class EventServiceImpl implements EventService {
                 event.setTitle(eventUpdateDto.getTitle());
             }
         }
-
-        if (eventUpdateDto.getStateAction().equals(StateAction.CANCEL_REVIEW.toString())) {
-            if (event.getState().equals(State.PENDING)) {
-                event.setState(State.CANCELED);
-            } else {
-                throw new ConflictException("Отменить можно только событие в состоянии ожидания модерации.");
+        if (eventUpdateDto.getStateAction() != null) {
+            if (eventUpdateDto.getStateAction().equals(StateAction.CANCEL_REVIEW.toString())) {
+                if (event.getState().equals(State.PENDING)) {
+                    event.setState(State.CANCELED);
+                } else {
+                    throw new ConflictException("Отменить можно только событие в состоянии ожидания модерации.");
+                }
             }
         }
         if (eventUpdateDto.getStateAction().equals(StateAction.SEND_TO_REVIEW.toString())) {
