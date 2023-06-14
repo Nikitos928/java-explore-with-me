@@ -119,7 +119,7 @@ public class EventServiceImpl implements EventService {
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new NotFoundException("Событие с id=" + eventId + " не опубликовано.");
         }
-
+        eventRepository.save(event);
         hitClient.saveNewHit(ip, "/events/" + eventId, app);
 
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
