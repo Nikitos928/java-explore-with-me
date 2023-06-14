@@ -67,16 +67,16 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии!");
         }
 
-        //List<Request> requests = requestRepository.findRequestByEventIdAndRequesterId(eventId, userId);
+        List<Request> requests = requestRepository.findRequestByEventIdAndRequesterId(eventId, userId);
 
-        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+        if (requests.size() == 0) {
             User user = checkingExistUser(userId);
 
             Request request = new Request();
             request.setEvent(event);
             request.setRequester(user);
 
-            if (!event.getRequestModeration()) {
+            if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
                 request.setStatus(Status.CONFIRMED);
             } else {
                 request.setStatus(Status.PENDING);
