@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.request.repository.RequestRepository;
-import ru.practicum.request.model.Request;
-import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.common.State;
 import ru.practicum.common.Status;
 import ru.practicum.event.model.Event;
@@ -16,6 +13,9 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.request.dto.ParticipationRequestDto;
 import ru.practicum.request.dto.RequestUpdateStatusInDto;
 import ru.practicum.request.dto.RequestUpdateStatusOutDto;
+import ru.practicum.request.mapper.RequestMapper;
+import ru.practicum.request.model.Request;
+import ru.practicum.request.repository.RequestRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
@@ -67,9 +67,9 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии!");
         }
 
-        List<Request> requests = requestRepository.findRequestByEventIdAndRequesterId(eventId, userId);
+        //List<Request> requests = requestRepository.findRequestByEventIdAndRequesterId(eventId, userId);
 
-        if (requests.size() == 0) {
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             User user = checkingExistUser(userId);
 
             Request request = new Request();
