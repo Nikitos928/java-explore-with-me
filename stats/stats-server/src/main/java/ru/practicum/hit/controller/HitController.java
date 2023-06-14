@@ -22,8 +22,8 @@ public class HitController {
 
     @GetMapping(path = "/stats")
     public List<HitDto> getHits(
-            @RequestParam(value = "start") String start,
-            @RequestParam(value = "end") String end,
+            @RequestParam(value = "start", required = false) String start,
+            @RequestParam(value = "end", required = false) String end,
             @RequestParam(value = "uris", required = false) List<String> uris,
             @RequestParam(value = "unique", defaultValue = "false") boolean unique) {
         log.info("Запрос на получение статистики Stats. GET: uris={}, period start={}, end={}, unique is {}",
