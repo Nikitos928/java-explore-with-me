@@ -108,8 +108,12 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getPublicEventById(int eventId, String ip) {
-        Event event = eventRepository.findByIdAndState(eventId, State.PUBLISHED)
+        Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id=" + eventId + " не найдено."));
+
+        if (!event.getState().equals(State.PUBLISHED)){
+            throw new NotFoundException("Событие с id=" + eventId + " не опубликовано.");
+        }
 
         hitClient.saveNewHit(ip, "/events/" + eventId, app);
 
