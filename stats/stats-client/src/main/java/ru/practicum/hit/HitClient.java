@@ -2,12 +2,12 @@ package ru.practicum.hit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestTemplate;
-import ru.practicum.hit.dto.HitDto;
-import ru.practicum.hit.dto.HitInDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import ru.practicum.hit.dto.HitDto;
+import ru.practicum.hit.dto.HitInDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.http.RequestEntity.post;
 
 @Service
 @Slf4j
@@ -63,6 +62,6 @@ public class HitClient {
                 .timestamp(LocalDateTime.now().format(dateTimeFormatter))
                 .build();
         log.info("HitClient. Запрос на сохранение статистики: {}", hitInDto);
-        post("/hit", hitInDto);
+        restTemplate.postForLocation(local + "/hit", hitInDto);
     }
 }
