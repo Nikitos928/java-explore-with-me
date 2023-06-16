@@ -1,19 +1,18 @@
 package ru.practicum.hit.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Data
 @Value
 @Builder
 public class HitInDto {
-    Long id;
+    Integer id;
     @NotBlank
     @Size(max = 100)
     String ip;
@@ -23,6 +22,5 @@ public class HitInDto {
     @NotBlank
     @Size(max = 250)
     String app;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime timestamp;
+    String timestamp;
 }

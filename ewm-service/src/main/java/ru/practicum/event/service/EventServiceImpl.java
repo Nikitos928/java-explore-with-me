@@ -1,11 +1,14 @@
 package ru.practicum.event.service;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +37,8 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.common.StateAction.SEND_TO_REVIEW;
@@ -128,8 +129,9 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
-        eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        eventFullDto.setViews(eventFullDto.getViews() + 1);
+        //eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        Map<Long, Long> hits = setViewsEvent(List.of(eventFullDto));
+        eventFullDto.setViews(hits.get(eventFullDto.getId()));
         return eventFullDto;
     }
 
@@ -139,7 +141,8 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
-        eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        Map<Long, Long> hits = setViewsEvent(List.of(eventFullDto));
+        eventFullDto.setViews(hits.get(eventFullDto.getId()));
         return eventFullDto;
     }
 
@@ -210,7 +213,8 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
-        eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        Map<Long, Long> hits = setViewsEvent(List.of(eventFullDto));
+        eventFullDto.setViews(hits.get(eventFullDto.getId()));
 
         return eventFullDto;
     }
@@ -234,7 +238,8 @@ public class EventServiceImpl implements EventService {
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
-        eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        Map<Long, Long> hits = setViewsEvent(List.of(eventFullDto));
+        eventFullDto.setViews(hits.get(eventFullDto.getId()));
         return eventFullDto;
     }
 
@@ -338,7 +343,7 @@ public class EventServiceImpl implements EventService {
     private List<EventFullDto> makeEventFullDtoList(List<Event> events) {
         List<EventFullDto> eventFullDtos = EventMapper.mapToListEventFullDto(events);
 
-        List<Integer> ids = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
         List<String> uris = new ArrayList<>();
         events.forEach(event -> {
             ids.add(event.getId());
@@ -346,12 +351,12 @@ public class EventServiceImpl implements EventService {
         });
 
         eventFullDtos = setConfRequestEvent(eventFullDtos, ids);
-        eventFullDtos = setViewsEvent(eventFullDtos, uris);
+        //eventFullDtos = setViewsEvent(eventFullDtos);
         return eventFullDtos;
     }
 
-    private List<EventFullDto> setConfRequestEvent(List<EventFullDto> eventFullDtos, List<Integer> eventIds) {
-        Map<Integer, List<Request>> confRequestMap = requestRepository.findRequestByEventIdInAndStatus(
+    private List<EventFullDto> setConfRequestEvent(List<EventFullDto> eventFullDtos, List<Long> eventIds) {
+        Map<Long, List<Request>> confRequestMap = requestRepository.findRequestByEventIdInAndStatus(
                         eventIds, Status.CONFIRMED)
                 .stream()
                 .collect(Collectors.groupingBy(Request::getIdEvent));
@@ -367,19 +372,31 @@ public class EventServiceImpl implements EventService {
         return eventFullDto;
     }
 
-    private List<EventFullDto> setViewsEvent(List<EventFullDto> eventFullDtos, List<String> uris) {
-        Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, false)
-                .stream()
-                .collect(Collectors.groupingBy(HitDto::getUri));
-
-        return eventFullDtos.stream()
-                .map(eventFullDto -> setCountViews(eventFullDto,
-                        statViewsMap.getOrDefault(eventFullDto.getId(), Collections.emptyList()).size()))
+    private Map<Long, Long> setViewsEvent(List<EventFullDto> events) {
+        List<Long> idEvents = events.stream()
+                .map(EventFullDto::getId)
                 .collect(Collectors.toList());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String start = LocalDateTime.now().minusYears(100).format(formatter);
+        String end = LocalDateTime.now().format(formatter);
+        String eventsUri = "/events/";
+        List<String> uris = idEvents.stream().map(id -> eventsUri + id).collect(Collectors.toList());
+        ResponseEntity<Object> response = hitClient.getHits(LocalDateTime.now().minusYears(100), LocalDateTime.now(), uris, true);
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<HitDto> viewStatsDto = objectMapper.convertValue(response.getBody(), new TypeReference<>() {
+        });
+        Map<Long, Long> hits = new HashMap<>();
+
+        for (HitDto statsDto : viewStatsDto) {
+            String uri = statsDto.getUri();
+            hits.put(Long.parseLong(uri.substring(eventsUri.length())), statsDto.getHits());
+        }
+
+        return hits;
     }
 
     private EventFullDto setCountViews(EventFullDto eventFullDto, int countViews) {
-        eventFullDto.setViews(countViews);
+        //eventFullDto.setViews(countViews);
         return eventFullDto;
     }
 }
