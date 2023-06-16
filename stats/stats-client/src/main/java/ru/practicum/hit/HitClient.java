@@ -1,59 +1,59 @@
 package ru.practicum.hit;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import ru.practicum.hit.dto.HitDto;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.hit.client.BaseClient;
 import ru.practicum.hit.dto.HitInDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class HitClient {
-    @Value("http://stats-server:9090")
+public class HitClient extends BaseClient {
+    @Autowired
+    public HitClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
+        super(
+                builder
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .build()
+        );
+    }
 
-    private String local;
-    private final RestTemplate restTemplate = new RestTemplate();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public List<HitDto> getHits(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public ResponseEntity<Object> getHits(LocalDateTime startLDT, LocalDateTime endLDT, List<String> uris, Boolean unique) {
         log.info("HitClient. Запрос на получение статистики: uris={},start={}, end={},  unique={}",
-                uris, start, end, unique);
+                uris, startLDT, endLDT, unique);
 
-        if (start == null || end == null || start.isAfter(end)) {
+        if (startLDT == null || endLDT == null || startLDT.isAfter(endLDT)) {
             throw new IllegalArgumentException("Не задан временной промежуток.");
         }
 
-        String startFormat = start.format(dateTimeFormatter);
-        String endFormat = end.format(dateTimeFormatter);
-        StringBuilder uriBuilder = new StringBuilder(local + "/stats?start=" + startFormat +
-                "&end=" + endFormat);
+        String start = startLDT.format(dateTimeFormatter);
+        String end = endLDT.format(dateTimeFormatter);
 
-        if (uris != null && !uris.isEmpty() && uris.size() != 0) {
-            for (String uri : uris) {
-                uriBuilder.append("&uris=").append(uri);
-            }
-        }
 
-        if (unique != null) {
-            uriBuilder.append("&unique=").append(unique);
-        }
-        ResponseEntity<HitDto[]> list = restTemplate.getForEntity(uriBuilder.toString(), HitDto[].class);
-
-        return Arrays.asList(Objects.requireNonNull(list.getBody()));
+        Map<String, Object> parameters = Map.of(
+                "start", start,
+                "end", end,
+                "uris", String.join(",", uris),
+                "unique", unique
+        );
+        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
     }
 
-    public void saveNewHit(String ip, String uri, String app) {
+    public ResponseEntity<Object> saveNewHit(String ip, String uri, String app) {
         HitInDto hitInDto = HitInDto.builder()
                 .id(0L)
                 .ip(ip)
@@ -62,6 +62,6 @@ public class HitClient {
                 .timestamp(LocalDateTime.now().format(dateTimeFormatter))
                 .build();
         log.info("HitClient. Запрос на сохранение статистики: {}", hitInDto);
-        restTemplate.postForLocation(local + "/hit", hitInDto);
+        return post("/hit", hitInDto);
     }
 }
