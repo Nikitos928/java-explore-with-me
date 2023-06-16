@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class HitDto {
     String app;
     String uri;
-    Integer hits;
+    Long hits;
 }
