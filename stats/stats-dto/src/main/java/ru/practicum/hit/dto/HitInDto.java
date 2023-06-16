@@ -1,5 +1,6 @@
 package ru.practicum.hit.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Data;
@@ -7,7 +8,6 @@ import lombok.Value;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Data
 @Value
@@ -24,5 +24,5 @@ public class HitInDto {
     @Size(max = 250)
     String app;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime timestamp;
+    String timestamp;
 }

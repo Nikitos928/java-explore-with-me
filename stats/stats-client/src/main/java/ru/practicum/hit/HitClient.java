@@ -55,7 +55,13 @@ public class HitClient {
     }
 
     public void saveNewHit(String ip, String uri, String app) {
-        HitInDto hitInDto = HitInDto.builder().id(0L).ip(ip).uri(uri).app(app).timestamp(LocalDateTime.now()).build();
+        HitInDto hitInDto = HitInDto.builder()
+                .id(0L)
+                .ip(ip)
+                .uri(uri)
+                .app(app)
+                .timestamp(LocalDateTime.now().format(dateTimeFormatter))
+                .build();
         log.info("HitClient. Запрос на сохранение статистики: {}", hitInDto);
         post("/hit", hitInDto);
     }
