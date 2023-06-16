@@ -35,7 +35,7 @@ public class Request {
     @JoinColumn(name = "requester_id")
     private User requester;
 
-    public int getIdEvent() {
+    public Long getIdEvent() {
         return this.event.getId();
     }
 

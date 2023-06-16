@@ -54,7 +54,7 @@ public class HitClient extends BaseClient {
 
     public ResponseEntity<Object> saveNewHit(String ip, String uri, String app) {
         HitInDto hitInDto = HitInDto.builder()
-                .id(0L)
+                .id(0)
                 .ip(ip)
                 .uri(uri)
                 .app(app)

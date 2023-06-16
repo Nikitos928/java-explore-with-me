@@ -12,7 +12,7 @@ import javax.validation.constraints.Size;
 @Value
 @Builder
 public class HitInDto {
-    Long id;
+    Integer id;
     @NotBlank
     @Size(max = 100)
     String ip;
