@@ -14,7 +14,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
             "from Hit as h " +
             "WHERE h.timestamp > ?1 " +
             "AND h.timestamp<?2 " +
-            "AND h.uri IN (?3) " +
+            "AND h.uri LIKE (concat('%', ?3, '%')) " +
             "Group by h.app, h.uri " +
             "order by count(h.ip) desc")
     List<HitDto> getHitsWithUri(LocalDateTime start, LocalDateTime end, List<String> uris);
@@ -23,7 +23,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
             "from Hit as h " +
             "WHERE h.timestamp > ?1 " +
             "AND h.timestamp<?2 " +
-            "AND h.uri IN (?3) " +
+            "AND h.uri LIKE (?3) " +
             "Group by h.app, h.uri " +
             "order by count(distinct h.ip) desc")
     List<HitDto> getHitsWithUriUniqueIp(LocalDateTime start, LocalDateTime end, List<String> uris);
