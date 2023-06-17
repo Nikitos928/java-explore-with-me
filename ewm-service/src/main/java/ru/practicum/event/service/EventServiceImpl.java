@@ -129,7 +129,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        eventFullDto.setViews(eventFullDto.getViews() + 1);
+        //eventFullDto.setViews(eventFullDto.getViews() + 1);
         return eventFullDto;
     }
 
@@ -374,7 +374,7 @@ public class EventServiceImpl implements EventService {
 
         return eventFullDtos.stream()
                 .map(eventFullDto -> setCountViews(eventFullDto,
-                        statViewsMap.getOrDefault(eventFullDto.getId(), Collections.emptyList()).size()))
+                        statViewsMap.getOrDefault("event/" + eventFullDto.getId(), Collections.emptyList()).size()))
                 .collect(Collectors.toList());
     }
 
