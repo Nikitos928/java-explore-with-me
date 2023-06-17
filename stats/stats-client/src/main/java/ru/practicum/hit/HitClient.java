@@ -21,8 +21,8 @@ import static org.springframework.http.RequestEntity.post;
 @Slf4j
 @RequiredArgsConstructor
 public class HitClient {
-    @Value("http://stats-server:9090")
-
+    //@Value("http://stats-server:9090")
+    @Value("http://localhost:8080")
     private String local;
     private final RestTemplate restTemplate = new RestTemplate();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -40,7 +40,7 @@ public class HitClient {
         StringBuilder uriBuilder = new StringBuilder(local + "/stats?start=" + startFormat +
                 "&end=" + endFormat);
 
-        if (uris != null && !uris.isEmpty() && uris.size() != 0) {
+        if (uris != null && !uris.isEmpty()) {
             for (String uri : uris) {
                 uriBuilder.append("&uris=").append(uri);
             }
@@ -49,7 +49,10 @@ public class HitClient {
         if (unique != null) {
             uriBuilder.append("&unique=").append(unique);
         }
-        ResponseEntity<HitDto[]> list = restTemplate.getForEntity(uriBuilder.toString(), HitDto[].class);
+        //uriBuilder.toString().replace(" ", "");
+        //System.out.println(uriBuilder.toString().replace(" ", ""));
+
+        ResponseEntity<HitDto[]> list = restTemplate.getForEntity(uriBuilder.toString().replace(" ", ""), HitDto[].class);
 
         return Arrays.asList(Objects.requireNonNull(list.getBody()));
     }

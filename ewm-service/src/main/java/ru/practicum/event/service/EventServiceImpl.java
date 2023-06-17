@@ -372,6 +372,7 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
 
+
         return eventFullDtos.stream()
                 .map(eventFullDto -> setCountViews(eventFullDto,
                         statViewsMap.getOrDefault(eventFullDto.getId(), Collections.emptyList()).size()))
