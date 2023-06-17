@@ -384,10 +384,6 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        //eventFullDtos.stream()
-        //        .map(eventFullDto -> setCountViews(eventFullDto,
-        //                statViewsMap.getOrDefault("event/" + eventFullDto.getId(), Collections.emptyList()).get(0).getHits()))
-        //        .collect(Collectors.toList());
         return evetsSetViews;
     }
 

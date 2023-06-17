@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompilationNewDto {
-    //@NotNull(message = "CompilationNewDto. Field: events не задано")
     private List<Integer> events;
     @Value("false")
     private Boolean pinned;

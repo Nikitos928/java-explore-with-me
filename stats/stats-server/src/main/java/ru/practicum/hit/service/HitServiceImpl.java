@@ -41,7 +41,6 @@ public class HitServiceImpl implements HitService {
     @Transactional
     @Override
     public HitInDto saveNewHit(HitInDto hitDto) {
-
         Hit newHit = hitRepository.save(HitMapper.mapToHit(hitDto));
         return HitMapper.mapToHitInDto(newHit);
     }
