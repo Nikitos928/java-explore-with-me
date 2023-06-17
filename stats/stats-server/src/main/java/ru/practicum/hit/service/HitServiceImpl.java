@@ -33,10 +33,16 @@ public class HitServiceImpl implements HitService {
         return hitRepository.getHitsWithUri(start, end, uris);
     }
 
+
     @Transactional
     @Override
     public HitInDto saveNewHit(HitInDto hitDto) {
-        Hit newHit = hitRepository.save(HitMapper.mapToHit(hitDto));
-        return HitMapper.mapToHitInDto(newHit);
+        if (hitRepository.getHitByIpAndUri(hitDto.getIp(), hitDto.getUri()) == null) {
+            Hit newHit = hitRepository.save(HitMapper.mapToHit(hitDto));
+            return HitMapper.mapToHitInDto(newHit);
+        } else {
+            return hitDto;
+        }
+
     }
 }

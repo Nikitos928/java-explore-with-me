@@ -123,13 +123,14 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Событие с id=" + eventId + " не опубликовано.");
         }
         eventRepository.save(event);
+
         hitClient.saveNewHit(ip, "/events/" + eventId, app);
+
 
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        //eventFullDto.setViews(eventFullDto.getViews() + 1);
         return eventFullDto;
     }
 
@@ -372,10 +373,7 @@ public class EventServiceImpl implements EventService {
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
         List<EventFullDto> evetsSetViews = new ArrayList<>();
-        System.out.println(statViewsMap);
         for (EventFullDto event : eventFullDtos) {
-            System.out.println(statViewsMap.containsKey("/events/" + event.getId()));
-            System.out.println("/events/" + event.getId());
             if (statViewsMap.containsKey("/events/" + event.getId())) {
                 event = setCountViews(event, statViewsMap.get("/events/" + event.getId()).get(0).getHits());
                 evetsSetViews.add(event);
