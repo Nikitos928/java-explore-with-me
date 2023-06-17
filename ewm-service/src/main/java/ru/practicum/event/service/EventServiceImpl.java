@@ -371,14 +371,28 @@ public class EventServiceImpl implements EventService {
         Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, false)
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
+        List<EventFullDto> evetsSetViews = new ArrayList<>();
+        System.out.println(statViewsMap);
+        for (EventFullDto event : eventFullDtos) {
+            System.out.println(statViewsMap.containsKey("/events/" + event.getId()));
+            System.out.println("/events/" + event.getId());
+            if (statViewsMap.containsKey("/events/" + event.getId())) {
+                event = setCountViews(event, statViewsMap.get("/events/" + event.getId()).get(0).getHits());
+                evetsSetViews.add(event);
+            } else {
+                event.setViews(0L);
+                evetsSetViews.add(event);
+            }
+        }
 
-        return eventFullDtos.stream()
-                .map(eventFullDto -> setCountViews(eventFullDto,
-                        statViewsMap.getOrDefault("event/" + eventFullDto.getId(), Collections.emptyList()).size()))
-                .collect(Collectors.toList());
+        //eventFullDtos.stream()
+        //        .map(eventFullDto -> setCountViews(eventFullDto,
+        //                statViewsMap.getOrDefault("event/" + eventFullDto.getId(), Collections.emptyList()).get(0).getHits()))
+        //        .collect(Collectors.toList());
+        return evetsSetViews;
     }
 
-    private EventFullDto setCountViews(EventFullDto eventFullDto, int countViews) {
+    private EventFullDto setCountViews(EventFullDto eventFullDto, Long countViews) {
         eventFullDto.setViews(countViews);
         return eventFullDto;
     }

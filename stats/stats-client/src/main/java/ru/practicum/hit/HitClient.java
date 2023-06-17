@@ -2,12 +2,12 @@ package ru.practicum.hit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestTemplate;
-import ru.practicum.hit.dto.HitDto;
-import ru.practicum.hit.dto.HitInDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import ru.practicum.hit.dto.HitDto;
+import ru.practicum.hit.dto.HitInDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -15,14 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.http.RequestEntity.post;
-
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class HitClient {
     @Value("http://stats-server:9090")
-
+    //@Value("http://localhost:9090")
     private String local;
     private final RestTemplate restTemplate = new RestTemplate();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -55,8 +53,8 @@ public class HitClient {
     }
 
     public void saveNewHit(String ip, String uri, String app) {
-        HitInDto hitInDto = HitInDto.builder().id(0L).ip(ip).uri(uri).app(app).timestamp(LocalDateTime.now()).build();
+        HitInDto hitInDto = HitInDto.builder().id(0L).ip(ip).uri(uri).app(app).timestamp(LocalDateTime.now().format(dateTimeFormatter)).build();
         log.info("HitClient. Запрос на сохранение статистики: {}", hitInDto);
-        post("/hit", hitInDto);
+        restTemplate.postForLocation(local + "/hit", hitInDto);
     }
 }
