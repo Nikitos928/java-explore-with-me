@@ -345,6 +345,7 @@ public class EventServiceImpl implements EventService {
             uris.add("/events/" + event.getId());
         });
 
+
         eventFullDtos = setConfRequestEvent(eventFullDtos, ids);
         eventFullDtos = setViewsEvent(eventFullDtos, uris);
         return eventFullDtos;
