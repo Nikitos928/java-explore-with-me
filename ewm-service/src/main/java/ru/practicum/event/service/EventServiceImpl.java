@@ -88,6 +88,9 @@ public class EventServiceImpl implements EventService {
         }
         List<Event> events = eventRepository.getEventsWithSort(categories, start, end, text, paid, pageable);
 
+        for (Event event : events) {
+            hitClient.saveNewHit(ip, "/events/" + event.getId(), app);
+        }
 
         List<EventFullDto> eventFullDtos = makeEventFullDtoList(events);
         if (!onlyAvailable) {
