@@ -129,7 +129,6 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        eventFullDto.setViews(eventFullDto.getViews() + 1);
         return eventFullDto;
     }
 
@@ -371,15 +370,19 @@ public class EventServiceImpl implements EventService {
         Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, false)
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
+        System.out.println(eventFullDtos);
+        System.out.println(uris);
 
 
+        System.out.println(statViewsMap.get("/events/1").get(0).getHits());
         return eventFullDtos.stream()
                 .map(eventFullDto -> setCountViews(eventFullDto,
-                        statViewsMap.getOrDefault(eventFullDto.getId(), Collections.emptyList()).size()))
+                        statViewsMap.getOrDefault(uris.get(0), Collections.emptyList()).get(0).getHits()))
                 .collect(Collectors.toList());
     }
 
-    private EventFullDto setCountViews(EventFullDto eventFullDto, int countViews) {
+    private EventFullDto setCountViews(EventFullDto eventFullDto, Long countViews) {
+        System.out.println();
         eventFullDto.setViews(countViews);
         return eventFullDto;
     }
