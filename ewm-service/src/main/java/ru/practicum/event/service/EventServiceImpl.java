@@ -374,11 +374,11 @@ public class EventServiceImpl implements EventService {
 
         return eventFullDtos.stream()
                 .map(eventFullDto -> setCountViews(eventFullDto,
-                        statViewsMap.getOrDefault(uris.get(0), Collections.emptyList()).get(0).getHits()))
+                        statViewsMap.getOrDefault(eventFullDto.getId(), Collections.emptyList()).size()))
                 .collect(Collectors.toList());
     }
 
-    private EventFullDto setCountViews(EventFullDto eventFullDto, Long countViews) {
+    private EventFullDto setCountViews(EventFullDto eventFullDto, int countViews) {
         eventFullDto.setViews(countViews);
         return eventFullDto;
     }
