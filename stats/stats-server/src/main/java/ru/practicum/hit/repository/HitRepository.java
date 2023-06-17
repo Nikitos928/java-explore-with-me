@@ -1,8 +1,8 @@
 package ru.practicum.hit.repository;
 
-import ru.practicum.hit.dto.HitDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import ru.practicum.hit.dto.HitDto;
 import ru.practicum.hit.model.Hit;
 
 import java.time.LocalDateTime;
@@ -44,6 +44,5 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
             "order by count(distinct  h.ip) desc")
     List<HitDto> getHitsUniqueIp(LocalDateTime start, LocalDateTime end);
 
-
-    Hit getHitByIpAndUri (String ip, String uri);
+    Hit getHitByIpAndUri(String ip, String uri);
 }
