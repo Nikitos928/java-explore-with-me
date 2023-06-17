@@ -37,12 +37,8 @@ public class HitServiceImpl implements HitService {
     @Transactional
     @Override
     public HitInDto saveNewHit(HitInDto hitDto) {
-        if (hitRepository.getHitByIpAndUri(hitDto.getIp(), hitDto.getUri()) == null) {
-            Hit newHit = hitRepository.save(HitMapper.mapToHit(hitDto));
-            return HitMapper.mapToHitInDto(newHit);
-        } else {
-            return hitDto;
-        }
 
+        Hit newHit = hitRepository.save(HitMapper.mapToHit(hitDto));
+        return HitMapper.mapToHitInDto(newHit);
     }
 }

@@ -369,7 +369,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<EventFullDto> setViewsEvent(List<EventFullDto> eventFullDtos, List<String> uris) {
-        Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, false)
+        Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, true)
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
         List<EventFullDto> evetsSetViews = new ArrayList<>();
