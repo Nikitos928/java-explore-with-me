@@ -200,8 +200,6 @@ public class EventServiceImpl implements EventService {
 
         updateEvent(event, eventUpdateDto);
 
-        //eventRepository.save(event);
-
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);

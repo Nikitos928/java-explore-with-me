@@ -70,8 +70,6 @@ public class CompilationServiceImpl implements CompilationService {
         if ((compilationUpdateDto.getEvents() != null) && !compilationUpdateDto.getEvents().isEmpty()) {
             updateCompilation.setEvents(new HashSet<>(new ArrayList<>(eventRepository.findEventByIdIn(compilationUpdateDto.getEvents()))));
         }
-
-        //compRepository.save(updateCompilation);
         return CompilationMapper.mapToCompilationDto(updateCompilation);
     }
 

@@ -68,4 +68,3 @@ CREATE TABLE requests
 
  CREATE INDEX if not exists index_annotation ON events (annotation);
  CREATE INDEX if not exists index_description ON events (description);
- CREATE INDEX if not exists index_event_date ON events (event_date);
