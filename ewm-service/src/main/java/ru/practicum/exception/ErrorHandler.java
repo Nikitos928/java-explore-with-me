@@ -1,6 +1,7 @@
 package ru.practicum.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -52,6 +53,19 @@ public class ErrorHandler {
         return Map.of("status", "409 - CONFLICT",
                 "reason", "Integrity constraint has been violated.",
                 "errorMessage", e.getMessage(),
+                "timestamp", LocalDateTime.now().toString()
+        );
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, String> handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
+        log.error("Исключение ConflictException");
+        return Map.of("status", "409 - CONFLICT",
+                "reason", "could not execute statement; SQL [n/a]; constraint [uq_email];" +
+                        " nested exception is org.hibernate.exception.ConstraintViolationException:" +
+                        " could not execute statement",
                 "timestamp", LocalDateTime.now().toString()
         );
     }
