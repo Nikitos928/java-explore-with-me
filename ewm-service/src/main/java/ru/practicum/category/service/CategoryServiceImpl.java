@@ -44,10 +44,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional
     @Override
-    public Category saveNewCategory(CategoryNewDto categoryNewDto) {
+    public CategoryDto saveNewCategory(CategoryNewDto categoryNewDto) {
         Category newCategory = categoryRepository.save(CategoryMapper.mapToNewCategory(categoryNewDto));
         log.info("CategoryService: Добавлена категория: {}", newCategory);
-        return newCategory;
+        return CategoryMapper.mapToCategoryDto(newCategory);
     }
 
     @Transactional
@@ -55,14 +55,17 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(int catId, CategoryNewDto categoryNewDto) {
         Category updateCategory = checkingExistCategory(catId);
         updateCategory.setName(categoryNewDto.getName());
-        categoryRepository.save(updateCategory);
+        //categoryRepository.save(updateCategory);
         return CategoryMapper.mapToCategoryDto(updateCategory);
     }
 
     @Transactional
     @Override
     public void deleteCategoryById(int catId) {
-        checkingExistCategory(catId);
+        if (!categoryRepository.existsById(catId)) {
+            throw new NotFoundException(String.format("Категория с id=%s не найдена", catId));
+        }
+
         if (eventRepository.findEventByCategoryId(catId).size() == 0) {
             log.info("Удалена категория с id = {}", catId);
             categoryRepository.deleteById(catId);

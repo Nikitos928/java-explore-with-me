@@ -3,14 +3,11 @@ package ru.practicum.category.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.category.model.Category;
-import ru.practicum.category.service.CategoryService;
 import ru.practicum.category.dto.CategoryDto;
-
 import ru.practicum.category.dto.CategoryNewDto;
+import ru.practicum.category.service.CategoryService;
 
 import javax.validation.Valid;
 
@@ -26,8 +23,8 @@ public class AdminCategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Category saveNewCategory(@RequestBody @Valid CategoryNewDto categoryNewDto) {
-        Category newCategoryDto = categoryService.saveNewCategory(categoryNewDto);
+    public CategoryDto saveNewCategory(@RequestBody @Valid CategoryNewDto categoryNewDto) {
+        CategoryDto newCategoryDto = categoryService.saveNewCategory(categoryNewDto);
         log.info("API AdminCategory. POST: Добавлена категория  {}", newCategoryDto);
         return newCategoryDto;
     }

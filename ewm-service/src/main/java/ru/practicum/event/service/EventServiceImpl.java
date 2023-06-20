@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
@@ -45,7 +44,7 @@ import static ru.practicum.common.StateAction.SEND_TO_REVIEW;
 
 @Slf4j
 @Service
-@Transactional(isolation = Isolation.SERIALIZABLE)
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @ComponentScan(basePackages = {"hit"})
 public class EventServiceImpl implements EventService {
@@ -54,9 +53,7 @@ public class EventServiceImpl implements EventService {
     private final RequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
     private final HitClient hitClient;
-    private final String app = "evm-service";
-    private final LocalDateTime minStart = LocalDateTime.now().minusYears(100L);
-    private final LocalDateTime maxEnd = LocalDateTime.now().plusYears(100L);
+    private static final String app = "STATISTICS_APP";
 
     @Override
     public List<EventFullDto> getAdminEvents(List<Integer> users, List<State> states, List<Integer> categories,
@@ -98,7 +95,7 @@ public class EventServiceImpl implements EventService {
         List<EventShortDto> eventShortDtos = EventMapper.mapToListEventShortFromFullDto(eventFullDtos);
 
         if (sortMethod == SortMethod.VIEWS) {
-            eventShortDtos.stream()
+            eventShortDtos = eventShortDtos.stream()
                     .sorted((e1, e2) -> {
                         if (e1.getViews() > e2.getViews())
                             return 1;
@@ -107,12 +104,9 @@ public class EventServiceImpl implements EventService {
                         else return 0;
                     })
                     .collect(Collectors.toList());
-            hitClient.saveNewHit(ip, "/events", app);
-            return eventShortDtos;
-        } else {
-            hitClient.saveNewHit(ip, "/events", app);
-            return eventShortDtos;
         }
+        hitClient.saveNewHit(ip, "/events", app);
+        return eventShortDtos;
     }
 
     @Override
@@ -123,7 +117,6 @@ public class EventServiceImpl implements EventService {
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new NotFoundException("Событие с id=" + eventId + " не опубликовано.");
         }
-        eventRepository.save(event);
 
         hitClient.saveNewHit(ip, "/events/" + eventId, app);
 
@@ -207,7 +200,7 @@ public class EventServiceImpl implements EventService {
 
         updateEvent(event, eventUpdateDto);
 
-        eventRepository.save(event);
+        //eventRepository.save(event);
 
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
@@ -370,25 +363,27 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<EventFullDto> setViewsEvent(List<EventFullDto> eventFullDtos, List<String> uris) {
+        LocalDateTime minStart = LocalDateTime.now().minusYears(100L);
+        LocalDateTime maxEnd = LocalDateTime.now().plusYears(100L);
         Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, true)
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
         List<EventFullDto> evetsSetViews = new ArrayList<>();
         for (EventFullDto event : eventFullDtos) {
-            if (statViewsMap.containsKey("/events/" + event.getId())) {
-                event = setCountViews(event, statViewsMap.get("/events/" + event.getId()).get(0).getHits());
-                evetsSetViews.add(event);
+            String key = "/events/" + event.getId();
+            if (statViewsMap.get(key) != null) {
+                setCountViews(event, statViewsMap.get(key).get(0).getHits());
             } else {
                 event.setViews(0L);
-                evetsSetViews.add(event);
             }
+            evetsSetViews.add(event);
+
         }
 
         return evetsSetViews;
     }
 
-    private EventFullDto setCountViews(EventFullDto eventFullDto, Long countViews) {
+    private void setCountViews(EventFullDto eventFullDto, Long countViews) {
         eventFullDto.setViews(countViews);
-        return eventFullDto;
     }
 }

@@ -103,7 +103,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("Пользователь не инициатор события!");
         }
 
-        List<Request> requests = new ArrayList<>(requestRepository.findAllByIdIn(requestInDto.getRequestIds()));
+        List<Request> requests = requestRepository.findAllByIdIn(requestInDto.getRequestIds());
 
         requests.forEach(request -> {
             if (request.getStatus() != Status.PENDING) {
@@ -117,7 +117,7 @@ public class RequestServiceImpl implements RequestService {
             requests.forEach(r -> {
                 r.setStatus(Status.REJECTED);
             });
-            requestRepository.saveAll(requests);
+            //requestRepository.saveAll(requests);
             return RequestMapper.mapToRequestUpdateStatusOutDto(new ArrayList<>(), requests);
         }
         reqConfirmed = requestRepository.getCountConfirmedRequest(eventId, Status.CONFIRMED);
@@ -133,7 +133,7 @@ public class RequestServiceImpl implements RequestService {
                 req.setStatus(Status.CONFIRMED);
                 confRequests.add(req);
                 rejRequests.remove(req);
-                requestRepository.save(req);
+              //  requestRepository.save(req);
                 reqConfirmed++;
             } else {
                 log.info("Лимит заявок для события исчерпан!");
@@ -144,9 +144,9 @@ public class RequestServiceImpl implements RequestService {
         if (rejRequests.size() > 0) {
             rejRequests.forEach(r -> {
                 r.setStatus(Status.REJECTED);
-                requestRepository.save(r);
+         //       requestRepository.save(r);
             });
-            requestRepository.saveAll(rejRequests);
+           // requestRepository.saveAll(rejRequests);
         }
         return RequestMapper.mapToRequestUpdateStatusOutDto(confRequests, rejRequests);
     }
@@ -162,7 +162,7 @@ public class RequestServiceImpl implements RequestService {
         }
         request.setStatus(Status.CANCELED);
         log.info("Отменен запрос с id = {}", requestId);
-        requestRepository.save(request);
+       // requestRepository.save(request);
         return RequestMapper.mapToParticipationRequestDto(request);
     }
 

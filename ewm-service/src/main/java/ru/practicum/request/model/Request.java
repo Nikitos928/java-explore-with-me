@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Table(name = "requests")
 @Getter
 @Setter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Request {
@@ -39,12 +38,4 @@ public class Request {
         return this.event.getId();
     }
 
-    @Override
-    public String toString() {
-        return "\n" + "Request = {" +
-                "   id=" + id + ", " +
-                "   status'" + status + ", " +
-                "   requester_id='" + requester.getId() + ", " +
-                "   event_id='" + event.getId();
-    }
 }

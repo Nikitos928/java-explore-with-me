@@ -30,15 +30,14 @@ public class UserServiceImpl implements UserService {
         Sort startSort = Sort.by("name");
         Pageable pageable = FromSizeRequest.of(from, size, startSort);
         if (ids == null || ids.length == 0) {
-            Page<User> users = userRepository.findAll(pageable);
+            Page<User> users = userRepository.getUsersOrderById(pageable);
             log.info("UserService: Данные о всех пользователях, сортировка по name");
             return UserMapper.mapToListUserDto(users).stream().sorted(Comparator.comparing(UserDto::getId))
                     .collect(Collectors.toList());
         } else {
             Page<User> users = userRepository.getUsersByIds(ids, pageable);
             log.info("UserService: Данные о пользователях по списку={}, сортировка по name", ids);
-            return UserMapper.mapToListUserDto(users).stream().sorted(Comparator.comparing(UserDto::getId))
-                    .collect(Collectors.toList());
+            return UserMapper.mapToListUserDto(users);
         }
     }
 

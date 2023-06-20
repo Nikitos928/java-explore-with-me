@@ -1,5 +1,6 @@
 package ru.practicum.category.mapper;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Page;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.dto.CategoryNewDto;
@@ -8,6 +9,7 @@ import ru.practicum.category.model.Category;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class CategoryMapper {
     public static CategoryDto mapToCategoryDto(Category category) {
         return new CategoryDto(category.getId(), category.getName());

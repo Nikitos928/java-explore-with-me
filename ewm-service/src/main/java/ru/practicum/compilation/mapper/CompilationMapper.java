@@ -1,5 +1,6 @@
 package ru.practicum.compilation.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.compilation.model.Compilation;
@@ -7,6 +8,7 @@ import ru.practicum.compilation.model.Compilation;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class CompilationMapper {
     public static CompilationDto mapToCompilationDto(Compilation compilation) {
         CompilationDto compilationDto = new CompilationDto();

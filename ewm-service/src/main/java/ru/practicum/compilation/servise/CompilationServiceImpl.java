@@ -16,6 +16,8 @@ import ru.practicum.compilation.repository.CompilationRepository;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.NotFoundException;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
@@ -46,7 +48,7 @@ public class CompilationServiceImpl implements CompilationService {
         compilation.setPinned(compilationNewDto.getPinned());
         compilation.setTitle(compilationNewDto.getTitle());
         if (compilationNewDto.getEvents() != null) {
-            compilation.setEvents(eventRepository.findEventByIdIn(compilationNewDto.getEvents()));
+            compilation.setEvents(new HashSet<>(new ArrayList<>(eventRepository.findEventByIdIn(compilationNewDto.getEvents()))));
         }
         compRepository.save(compilation);
         return CompilationMapper.mapToCompilationDto(compilation);
@@ -66,17 +68,19 @@ public class CompilationServiceImpl implements CompilationService {
         }
 
         if ((compilationUpdateDto.getEvents() != null) && !compilationUpdateDto.getEvents().isEmpty()) {
-            updateCompilation.setEvents(eventRepository.findEventByIdIn(compilationUpdateDto.getEvents()));
+            updateCompilation.setEvents(new HashSet<>(new ArrayList<>(eventRepository.findEventByIdIn(compilationUpdateDto.getEvents()))));
         }
 
-        compRepository.save(updateCompilation);
+        //compRepository.save(updateCompilation);
         return CompilationMapper.mapToCompilationDto(updateCompilation);
     }
 
     @Transactional
     @Override
     public void deleteCompilationById(int compId) {
-        checkingExistCompilation(compId);
+        if (!compRepository.existsById(compId)) {
+            throw new NotFoundException(String.format("Подборка с id=%s не найдена", compId));
+        }
         compRepository.deleteById(compId);
     }
 

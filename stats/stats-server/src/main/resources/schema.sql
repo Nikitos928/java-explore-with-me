@@ -8,6 +8,6 @@ create table if not exists hits
     CONSTRAINT pk_hit PRIMARY KEY (id)
 );
 
- CREATE INDEX index1 ON hits (app);
- CREATE INDEX index2 ON hits (uri);
- CREATE INDEX index3 ON hits (timestamp);
+ CREATE INDEX if not exists index1 ON hits (app);
+ CREATE INDEX if not exists  index2 ON hits (uri);
+ CREATE INDEX if not exists  index3 ON hits (timestamp);

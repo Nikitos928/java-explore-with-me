@@ -1,5 +1,6 @@
 package ru.practicum.event.mapper;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.dto.EventFullDto;
@@ -13,6 +14,7 @@ import ru.practicum.user.dto.UserShortDto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@UtilityClass
 public class EventMapper {
     public static EventFullDto mapToEventFullDto(Event event) {
         EventFullDto eventFullDto = new EventFullDto();
