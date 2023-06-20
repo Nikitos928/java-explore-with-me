@@ -65,6 +65,3 @@ CREATE TABLE requests
     CONSTRAINT fk_request_user FOREIGN KEY (requester_id) REFERENCES users (id),
     CONSTRAINT fk_request_event FOREIGN KEY (event_id) REFERENCES events (id)
 );
-
- CREATE INDEX if not exists index_annotation ON events (annotation);
- CREATE INDEX if not exists index_description ON events (description);
