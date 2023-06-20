@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 public class UserDto {
     private Integer id;
     @NotBlank(message = "UserDto. Field: name не может быть пустым или содержать только пробелы")
-    @Size(max = 255, min = 2)
+    @Size(max = 250, min = 2)
     private String name;
     @NotBlank(message = "UserDto. Field: email не может быть пустым или содержать только пробелы")
     @Email(message = "UserDto. Field: email не соответствует формату электронной почты")

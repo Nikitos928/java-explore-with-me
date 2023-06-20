@@ -12,6 +12,6 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 public class CategoryNewDto {
     @NotBlank(message = "CategoryInDto. Field: name не может быть пустым или содержать только пробелы")
-    @Size(max = 255)
+    @Size(max = 50, min = 1)
     String name;
 }
