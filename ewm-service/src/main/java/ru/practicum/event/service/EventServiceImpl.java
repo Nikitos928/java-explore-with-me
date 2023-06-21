@@ -53,7 +53,7 @@ public class EventServiceImpl implements EventService {
     private final RequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
     private final HitClient hitClient;
-    private static final String app = "STATISTICS_APP";
+    private static final String STATISTICS_APP = "evm-service";
 
     @Override
     public List<EventFullDto> getAdminEvents(List<Integer> users, List<State> states, List<Integer> categories,
@@ -105,7 +105,7 @@ public class EventServiceImpl implements EventService {
                     })
                     .collect(Collectors.toList());
         }
-        hitClient.saveNewHit(ip, "/events", app);
+        hitClient.saveNewHit(ip, "/events", STATISTICS_APP);
         return eventShortDtos;
     }
 
@@ -118,7 +118,7 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Событие с id=" + eventId + " не опубликовано.");
         }
 
-        hitClient.saveNewHit(ip, "/events/" + eventId, app);
+        hitClient.saveNewHit(ip, "/events/" + eventId, STATISTICS_APP);
 
 
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
@@ -222,7 +222,6 @@ public class EventServiceImpl implements EventService {
         }
 
         updateEvent(event, eventUpdateDto);
-        eventRepository.save(event);
 
         EventFullDto eventFullDto = EventMapper.mapToEventFullDto(event);
 
