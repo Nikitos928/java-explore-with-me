@@ -5,6 +5,7 @@ import ru.practicum.hit.dto.HitInDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.hit.exception.RequestException;
 import ru.practicum.hit.repository.HitRepository;
 import ru.practicum.hit.mapper.HitMapper;
 import ru.practicum.hit.model.Hit;
@@ -19,8 +20,11 @@ public class HitServiceImpl implements HitService {
     private final HitRepository hitRepository;
 
     @Override
-    public List<HitDto> getHits(LocalDateTime start, LocalDateTime end, String[] uri, boolean unique) {
-        if (uri == null) {
+    public List<HitDto> getHits(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
+        if (!end.isAfter(start)) {
+            throw new RequestException("Дата окончания события не может быть раньше начала");
+        }
+        if (uris == null || uris.size() == 0) {
             if (unique) {
                 return hitRepository.getHitsUniqueIp(start, end);
             }
@@ -28,10 +32,11 @@ public class HitServiceImpl implements HitService {
         }
 
         if (unique) {
-            return hitRepository.getHitsWithUriUniqueIp(start, end, uri);
+            return hitRepository.getHitsWithUriUniqueIp(start, end, uris);
         }
-        return hitRepository.getHitsWithUri(start, end, uri);
+        return hitRepository.getHitsWithUri(start, end, uris);
     }
+
 
     @Transactional
     @Override

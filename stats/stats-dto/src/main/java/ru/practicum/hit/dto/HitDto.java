@@ -1,10 +1,12 @@
 package ru.practicum.hit.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Value;
+import lombok.NoArgsConstructor;
 
 @Data
-@Value
+@AllArgsConstructor
+@NoArgsConstructor
 public class HitDto {
     String app;
     String uri;
