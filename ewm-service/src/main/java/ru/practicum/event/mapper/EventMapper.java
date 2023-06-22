@@ -108,6 +108,7 @@ public class EventMapper {
         eventShortDto.setTitle(eventFullDto.getTitle());
         eventShortDto.setViews(eventFullDto.getViews());
         eventShortDto.setConfirmedRequests(eventFullDto.getConfirmedRequests());
+        eventShortDto.setComments(eventFullDto.getComments());
         return eventShortDto;
     }
 

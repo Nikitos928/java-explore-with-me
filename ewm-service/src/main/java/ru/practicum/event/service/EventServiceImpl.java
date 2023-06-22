@@ -12,6 +12,8 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.comment.model.Comment;
+import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.common.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
@@ -52,6 +54,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
+    private final CommentRepository commentRepository;
     private final HitClient hitClient;
     private static final String STATISTICS_APP = "evm-service";
 
@@ -125,6 +128,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
         return eventFullDto;
     }
 
@@ -135,6 +139,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
         return eventFullDto;
     }
 
@@ -204,7 +209,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-
+        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
         return eventFullDto;
     }
 
@@ -227,6 +232,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
         return eventFullDto;
     }
 
@@ -339,6 +345,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDtos = setConfRequestEvent(eventFullDtos, ids);
         eventFullDtos = setViewsEvent(eventFullDtos, uris);
+        eventFullDtos = setCommentsEvent(eventFullDtos, ids);
         return eventFullDtos;
     }
 
@@ -382,5 +389,19 @@ public class EventServiceImpl implements EventService {
 
     private void setCountViews(EventFullDto eventFullDto, Long countViews) {
         eventFullDto.setViews(countViews);
+    }
+    private List<EventFullDto> setCommentsEvent(List<EventFullDto> eventFullDtos, List<Integer> eventIds) {
+        Map<Integer, List<Comment>> commentsMap = commentRepository.findCommentByEventIdIn(eventIds)
+                .stream()
+                .collect(Collectors.groupingBy(Comment::getIdEvent));
+        return eventFullDtos.stream()
+                .map(eventFullDto -> setComments(eventFullDto,
+                        commentsMap.getOrDefault(eventFullDto.getId(), Collections.emptyList()).size()))
+                .collect(Collectors.toList());
+    }
+
+    private EventFullDto setComments(EventFullDto eventFullDto, int countComments) {
+        eventFullDto.setComments(countComments);
+        return eventFullDto;
     }
 }
