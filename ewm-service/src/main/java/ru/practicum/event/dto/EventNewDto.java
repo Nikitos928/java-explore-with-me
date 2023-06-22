@@ -4,8 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Value;
+import ru.practicum.common.StateAction;
+import ru.practicum.validation.group.Marker;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -17,22 +18,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventNewDto {
-    @NotBlank(message = "EventNewDto. Field: annotation не может быть пустым или содержать только пробелы")
+    @NotBlank(message = "EventNewDto. Field: annotation не может быть пустым или содержать только пробелы", groups = Marker.OnCreate.class)
     @Size(min = 20, max = 2000)
     private String annotation;
 
-    @NotNull(message = "EventNewDto. Field: category не задано")
+    @NotNull(message = "EventNewDto. Field: category не задано", groups = Marker.OnCreate.class)
     private Integer category;
 
-    @NotBlank(message = "EventNewDto. Field: description не может быть пустым или содержать только пробелы")
+    @NotBlank(message = "EventNewDto. Field: description не может быть пустым или содержать только пробелы", groups = Marker.OnCreate.class)
     @Size(min = 20, max = 7000)
     private String description;
 
-    @NotNull(message = "EventNewDto. Field: eventDate не задано")
+    @NotNull(message = "EventNewDto. Field: eventDate не задано", groups = Marker.OnCreate.class)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
-    @NotNull(message = "EventNewDto. Field: location не задано")
+    @NotNull(message = "EventNewDto. Field: location не задано", groups = Marker.OnCreate.class)
     private Location location;
 
     @Value("false")
@@ -45,7 +46,9 @@ public class EventNewDto {
     @Value("true")
     private Boolean requestModeration;
 
-    @NotBlank(message = "EventNewDto. Field: title не может быть пустым или содержать только пробелы")
+    @NotBlank(message = "EventNewDto. Field: title не может быть пустым или содержать только пробелы", groups = Marker.OnCreate.class)
     @Size(min = 3, max = 120)
     private String title;
+
+    private StateAction stateAction;
 }

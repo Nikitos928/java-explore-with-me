@@ -5,7 +5,6 @@ import ru.practicum.common.State;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.EventUpdateDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,8 +28,8 @@ public interface EventService {
 
     EventFullDto saveNewEvent(int userId, EventNewDto eventNewDto);
 
-    EventFullDto updatePrivateEvent(int userId, int eventId, EventUpdateDto eventUpdateDto);
+    EventFullDto updatePrivateEvent(int userId, int eventId, EventNewDto eventUpdateDto);
 
-    EventFullDto updateAdminEvent(int eventId, EventUpdateDto eventUpdateDto);
+    EventFullDto updateAdminEvent(int eventId, EventNewDto eventUpdateDto);
 
 }

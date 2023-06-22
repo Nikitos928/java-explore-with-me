@@ -18,7 +18,6 @@ import ru.practicum.common.*;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.EventUpdateDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
@@ -176,7 +175,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updatePrivateEvent(int userId, int eventId, EventUpdateDto eventUpdateDto) {
+    public EventFullDto updatePrivateEvent(int userId, int eventId, EventNewDto eventUpdateDto) {
         Event event = checkingExistEventByUserId(userId, eventId);
         if (eventUpdateDto.getEventDate() != null) {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
@@ -215,7 +214,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updateAdminEvent(int eventId, EventUpdateDto eventUpdateDto) {
+    public EventFullDto updateAdminEvent(int eventId, EventNewDto eventUpdateDto) {
         Event event = checkingExistEvent(eventId);
 
         if (eventUpdateDto.getEventDate() != null && event.getPublishedOn() != null) {
@@ -259,7 +258,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new ConflictException(String.format("Категория с id=%s не найдена", catId)));
     }
 
-    private void updateEvent(Event event, EventUpdateDto eventUpdateDto) {
+    private void updateEvent(Event event, EventNewDto eventUpdateDto) {
         if (eventUpdateDto.getEventDate() != null) {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now())) {
                 log.info("Нельзя изменить дату события {} на уже наступившую.",
