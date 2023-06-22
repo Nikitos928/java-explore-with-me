@@ -32,6 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
         Sort startSort = Sort.by("name");
         Pageable pageable = FromSizeRequest.of(from, size, startSort);
         Page<Category> categories = categoryRepository.findAll(pageable);
+
         log.info("CategoryService: Данные о всех категориях, сортировка по name");
         return CategoryMapper.mapToListCategoryDto(categories);
     }
