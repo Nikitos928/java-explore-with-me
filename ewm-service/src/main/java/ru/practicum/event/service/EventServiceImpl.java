@@ -390,6 +390,7 @@ public class EventServiceImpl implements EventService {
     private void setCountViews(EventFullDto eventFullDto, Long countViews) {
         eventFullDto.setViews(countViews);
     }
+
     private List<EventFullDto> setCommentsEvent(List<EventFullDto> eventFullDtos, List<Integer> eventIds) {
         Map<Integer, List<Comment>> commentsMap = commentRepository.findCommentByEventIdIn(eventIds)
                 .stream()
