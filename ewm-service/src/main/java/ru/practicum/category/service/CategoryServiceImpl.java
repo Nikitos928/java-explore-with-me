@@ -56,6 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(int catId, CategoryNewDto categoryNewDto) {
         Category updateCategory = checkingExistCategory(catId);
+
         updateCategory.setName(categoryNewDto.getName());
         return CategoryMapper.mapToCategoryDto(updateCategory);
     }
