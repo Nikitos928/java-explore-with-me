@@ -372,7 +372,7 @@ public class EventServiceImpl implements EventService {
         Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, true)
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
-        List<EventFullDto> evetsSetViews = new ArrayList<>();
+
         for (EventFullDto event : eventFullDtos) {
             String key = "/events/" + event.getId();
             if (statViewsMap.get(key) != null) {
@@ -380,11 +380,8 @@ public class EventServiceImpl implements EventService {
             } else {
                 event.setViews(0L);
             }
-            evetsSetViews.add(event);
-
         }
-
-        return evetsSetViews;
+        return eventFullDtos;
     }
 
     private void setCountViews(EventFullDto eventFullDto, Long countViews) {
