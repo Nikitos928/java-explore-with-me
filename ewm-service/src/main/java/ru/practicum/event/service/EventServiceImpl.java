@@ -85,6 +85,7 @@ public class EventServiceImpl implements EventService {
         if (text != null) {
             text = text.toLowerCase();
         }
+
         List<Event> events = eventRepository.getEventsWithSort(categories, start, end, text, paid, pageable);
 
         List<EventFullDto> eventFullDtos = makeEventFullDtoList(events);
