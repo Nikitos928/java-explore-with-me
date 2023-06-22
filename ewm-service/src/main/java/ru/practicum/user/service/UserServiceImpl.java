@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.FromSizeRequest;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -41,6 +42,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto saveNewUser(UserDto userDto) {
+        if (userRepository.findFirstByEmailOrName(userDto.getEmail(), userDto.getName()) != null){
+            throw new ConflictException(String.format("Пользователь с email = %s или name = %s уже существует",
+                    userDto.getEmail(), userDto.getName()));
+        }
         User newUser = userRepository.save(UserMapper.mapToUser(userDto));
         log.info("UserService:  Зарегистрирован новый пользователь: {}", newUser);
         return UserMapper.mapToUserDto(newUser);
