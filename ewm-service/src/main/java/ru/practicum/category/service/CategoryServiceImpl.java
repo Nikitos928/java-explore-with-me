@@ -18,6 +18,7 @@ import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -56,6 +57,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(int catId, CategoryNewDto categoryNewDto) {
         Category updateCategory = checkingExistCategory(catId);
+        if (Objects.equals(updateCategory.getName(), categoryNewDto.getName())) {
+            return CategoryMapper.mapToCategoryDto(updateCategory);
+        }
         checkingNameCategory(categoryNewDto.getName());
         updateCategory.setName(categoryNewDto.getName());
         return CategoryMapper.mapToCategoryDto(updateCategory);
