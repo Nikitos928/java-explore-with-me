@@ -76,3 +76,7 @@ CREATE TABLE IF NOT EXISTS comments
     CONSTRAINT fk_comment_user FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT fk_comment_event FOREIGN KEY (event_id) REFERENCES events (id)
 );
+
+CREATE INDEX users_email ON users (email);
+CREATE INDEX events_date ON events (event_date);
+CREATE INDEX compilation_title ON compilations (title);
