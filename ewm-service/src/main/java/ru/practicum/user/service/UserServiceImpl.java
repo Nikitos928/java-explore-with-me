@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto saveNewUser(UserDto userDto) {
-        if (userRepository.findFirstByEmailOrName(userDto.getEmail(), userDto.getName()) != null){
+        if (userRepository.findFirstByEmailOrName(userDto.getEmail(), userDto.getName()) != null) {
             throw new ConflictException(String.format("Пользователь с email = %s или name = %s уже существует",
                     userDto.getEmail(), userDto.getName()));
         }
