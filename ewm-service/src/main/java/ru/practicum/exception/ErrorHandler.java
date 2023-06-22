@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -51,6 +52,17 @@ public class ErrorHandler {
         log.error("Исключение ConflictException");
         return Map.of("status", "409 - CONFLICT",
                 "reason", "Integrity constraint has been violated.",
+                "errorMessage", e.getMessage(),
+                "timestamp", LocalDateTime.now().toString()
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleRequestException(final ConstraintViolationException e) {
+        log.error("400 {}", e.getMessage());
+        return Map.of("status", "400 - BAD_REQUEST",
+                "reason", "Incorrectly made request.",
                 "errorMessage", e.getMessage(),
                 "timestamp", LocalDateTime.now().toString()
         );
