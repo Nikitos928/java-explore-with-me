@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
+import ru.practicum.event.dto.EventInputDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.Location;
 import ru.practicum.event.model.Event;
@@ -42,7 +42,7 @@ public class EventMapper {
                 .collect(Collectors.toList());
     }
 
-    public static Event mapToEvent(User initiator, Category category, EventNewDto eventNewDto) {
+    public static Event mapToEvent(User initiator, Category category, EventInputDto eventNewDto) {
         Event event = new Event();
         event.setCategory(category);
         event.setInitiator(initiator);

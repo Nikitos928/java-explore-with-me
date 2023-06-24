@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.dto.CompilationNewDto;
+import ru.practicum.compilation.dto.CompilationInputDto;
 import ru.practicum.compilation.servise.CompilationService;
-import ru.practicum.validation.group.Marker;
+import ru.practicum.validation.group.OnCreate;
 
 import javax.validation.Valid;
 
@@ -22,8 +22,8 @@ public class AdminCompilationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    @Validated({Marker.OnCreate.class})
-    public CompilationDto saveNewCompilation(@Valid @RequestBody CompilationNewDto compilationNewDto) {
+    @Validated({OnCreate.class})
+    public CompilationDto saveNewCompilation(@Valid @RequestBody CompilationInputDto compilationNewDto) {
         if (compilationNewDto.getPinned() == null) {
             compilationNewDto.setPinned(false);
         }
@@ -36,7 +36,7 @@ public class AdminCompilationController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{compId}")
     public CompilationDto updateCompilation(@PathVariable int compId,
-                                            @Valid @RequestBody CompilationNewDto compilationUpdateDto) {
+                                            @Valid @RequestBody CompilationInputDto compilationUpdateDto) {
         log.info("API AdminCompilation. PATCH: параметры compId={}, updateDto={}", compId, compilationUpdateDto);
         CompilationDto compilationDto = compilationService.updateCompilation(compId, compilationUpdateDto);
         log.info("API AdminCompilation. PATCH: Изменены данные подборки {}, compId={}", compilationDto, compId);

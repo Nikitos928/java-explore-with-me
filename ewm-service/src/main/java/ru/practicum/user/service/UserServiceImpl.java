@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.FromSizeRequest;
 import ru.practicum.exception.ConflictException;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToListUserDto(users);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     @Override
     public UserDto saveNewUser(UserDto userDto) {
         if (userRepository.findFirstByEmailOrName(userDto.getEmail(), userDto.getName()) != null) {

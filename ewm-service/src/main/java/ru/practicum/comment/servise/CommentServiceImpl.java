@@ -62,9 +62,7 @@ public class CommentServiceImpl implements CommentService {
             throw new ConflictException("Изменить комментарий может только его автор.");
         }
         comment.setText(commentNewDto.getText());
-
-        Comment newComment = commentRepository.save(comment);
-        return CommentMapper.mapToCommentDto(newComment);
+        return CommentMapper.mapToCommentDto(comment);
     }
 
     @Override

@@ -16,7 +16,7 @@ import ru.practicum.comment.model.Comment;
 import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.common.*;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
+import ru.practicum.event.dto.EventInputDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
@@ -128,7 +128,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
@@ -139,7 +139,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
@@ -153,7 +153,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto saveNewEvent(int userId, EventNewDto eventNewDto) {
+    public EventFullDto saveNewEvent(int userId, EventInputDto eventNewDto) {
         if (eventNewDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
             log.info("Дата и время события {} - не может быть раньше, чем через два часа от текущего момента",
                     eventNewDto.getEventDate());
@@ -176,7 +176,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updatePrivateEvent(int userId, int eventId, EventNewDto eventUpdateDto) {
+    public EventFullDto updatePrivateEvent(int userId, int eventId, EventInputDto eventUpdateDto) {
         Event event = checkingExistEventByUserId(userId, eventId);
         if (eventUpdateDto.getEventDate() != null) {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
@@ -209,13 +209,13 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
     @Transactional
     @Override
-    public EventFullDto updateAdminEvent(int eventId, EventNewDto eventUpdateDto) {
+    public EventFullDto updateAdminEvent(int eventId, EventInputDto eventUpdateDto) {
         Event event = checkingExistEvent(eventId);
 
         if (eventUpdateDto.getEventDate() != null && event.getPublishedOn() != null) {
@@ -232,7 +232,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-        eventFullDto.setComments(commentRepository.findCommentByEventId(eventId).size());
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
@@ -259,7 +259,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new ConflictException(String.format("Категория с id=%s не найдена", catId)));
     }
 
-    private void updateEvent(Event event, EventNewDto eventUpdateDto) {
+    private void updateEvent(Event event, EventInputDto eventUpdateDto) {
         if (eventUpdateDto.getEventDate() != null) {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now())) {
                 log.info("Нельзя изменить дату события {} на уже наступившую.",

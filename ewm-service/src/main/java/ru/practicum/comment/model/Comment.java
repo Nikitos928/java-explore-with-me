@@ -31,7 +31,6 @@ public class Comment {
     private User user;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id")
-    @ToString.Exclude
     private Event event;
 
     public int getIdEvent() {

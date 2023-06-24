@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
+import ru.practicum.event.dto.EventInputDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.service.EventService;
-import ru.practicum.validation.group.Marker;
+import ru.practicum.validation.group.OnCreate;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -46,9 +46,9 @@ public class PrivateEventController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{userId}/events")
-    @Validated({Marker.OnCreate.class})
+    @Validated({OnCreate.class})
     public EventFullDto saveNewEvent(@PathVariable int userId,
-                                     @Valid @RequestBody EventNewDto eventNewDto) {
+                                     @Valid @RequestBody EventInputDto eventNewDto) {
         if (eventNewDto.getPaid() == null) {
             eventNewDto.setPaid(false);
         }
@@ -68,7 +68,7 @@ public class PrivateEventController {
     @PatchMapping("/{userId}/events/{eventId}")
     public EventFullDto updateUser(@PathVariable(value = "userId") int userId,
                                    @PathVariable(value = "eventId") int eventId,
-                                   @Valid @RequestBody EventNewDto eventUpdateDto) {
+                                   @Valid @RequestBody EventInputDto eventUpdateDto) {
         log.info("API PrivateEvent. PATCH параметры: userId={}, eventId={}, eventUpdateDto={}",
                 userId, eventId, eventUpdateDto);
         EventFullDto eventFullDto = eventService.updatePrivateEvent(userId, eventId, eventUpdateDto);

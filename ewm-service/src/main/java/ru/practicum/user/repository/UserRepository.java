@@ -16,5 +16,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "ORDER BY u.id ")
     Page<User> getUsersOrderById(Pageable pageable);
 
+
     User findFirstByEmailOrName(String email, String name);
 }
