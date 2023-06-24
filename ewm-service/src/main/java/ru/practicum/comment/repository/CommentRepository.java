@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ru.practicum.comment.model.Comment;
 
 import java.util.List;
-import java.util.Map;
 
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
     List<Comment> findCommentByEventId(Integer eventId);
