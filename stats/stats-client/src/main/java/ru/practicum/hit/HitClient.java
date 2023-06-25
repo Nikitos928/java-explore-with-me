@@ -1,8 +1,8 @@
 package ru.practicum.hit;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,10 +17,14 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
+@PropertySource(value = "classpath:application.properties", encoding = "UTF-8")
 public class HitClient {
-    @Value("http://stats-server:9090")
-    private String local;
+    private final String local;
+
+    public HitClient(@Value(value = "${stats-server.url}") String local) {
+        this.local = local;
+    }
+
     private final RestTemplate restTemplate = new RestTemplate();
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

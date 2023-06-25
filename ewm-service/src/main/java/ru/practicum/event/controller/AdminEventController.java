@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.common.State;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventUpdateDto;
+import ru.practicum.event.dto.EventInputDto;
 import ru.practicum.event.service.EventService;
 
 import javax.validation.Valid;
@@ -48,7 +48,7 @@ public class AdminEventController {
     @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable int eventId,
-                                    @Valid @RequestBody EventUpdateDto eventUpdateDto) {
+                                    @Valid @RequestBody EventInputDto eventUpdateDto) {
         log.info("API AdminEvent. PATCH: eventId={}, eventUpdateDto={}", eventId, eventUpdateDto);
 
         EventFullDto updateEvent = eventService.updateAdminEvent(eventId, eventUpdateDto);

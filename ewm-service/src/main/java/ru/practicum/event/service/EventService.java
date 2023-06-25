@@ -3,9 +3,8 @@ package ru.practicum.event.service;
 import ru.practicum.common.SortMethod;
 import ru.practicum.common.State;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
+import ru.practicum.event.dto.EventInputDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.EventUpdateDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,10 +26,10 @@ public interface EventService {
 
     EventFullDto getPrivateEventByEventIdAndUserId(int userId, int eventId);
 
-    EventFullDto saveNewEvent(int userId, EventNewDto eventNewDto);
+    EventFullDto saveNewEvent(int userId, EventInputDto eventNewDto);
 
-    EventFullDto updatePrivateEvent(int userId, int eventId, EventUpdateDto eventUpdateDto);
+    EventFullDto updatePrivateEvent(int userId, int eventId, EventInputDto eventUpdateDto);
 
-    EventFullDto updateAdminEvent(int eventId, EventUpdateDto eventUpdateDto);
+    EventFullDto updateAdminEvent(int eventId, EventInputDto eventUpdateDto);
 
 }

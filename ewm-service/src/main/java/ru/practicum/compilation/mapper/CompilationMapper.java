@@ -2,7 +2,7 @@ package ru.practicum.compilation.mapper;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.dto.CompilationNewDto;
+import ru.practicum.compilation.dto.CompilationInputDto;
 import ru.practicum.compilation.model.Compilation;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class CompilationMapper {
         return compilationDtos;
     }
 
-    public Compilation mapToCompilation(CompilationNewDto compilationNewDto) {
+    public Compilation mapToCompilation(CompilationInputDto compilationNewDto) {
         Compilation compilation = new Compilation();
         compilation.setPinned(compilationNewDto.getPinned());
         compilation.setTitle(compilationNewDto.getTitle());

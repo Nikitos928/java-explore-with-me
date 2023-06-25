@@ -18,6 +18,7 @@ import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -32,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
         Sort startSort = Sort.by("name");
         Pageable pageable = FromSizeRequest.of(from, size, startSort);
         Page<Category> categories = categoryRepository.findAll(pageable);
+
         log.info("CategoryService: Данные о всех категориях, сортировка по name");
         return CategoryMapper.mapToListCategoryDto(categories);
     }
@@ -45,6 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public CategoryDto saveNewCategory(CategoryNewDto categoryNewDto) {
+        checkingNameCategory(categoryNewDto.getName());
         Category newCategory = categoryRepository.save(CategoryMapper.mapToNewCategory(categoryNewDto));
         log.info("CategoryService: Добавлена категория: {}", newCategory);
         return CategoryMapper.mapToCategoryDto(newCategory);
@@ -54,6 +57,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(int catId, CategoryNewDto categoryNewDto) {
         Category updateCategory = checkingExistCategory(catId);
+        if (Objects.equals(updateCategory.getName(), categoryNewDto.getName())) {
+            return CategoryMapper.mapToCategoryDto(updateCategory);
+        }
+        checkingNameCategory(categoryNewDto.getName());
         updateCategory.setName(categoryNewDto.getName());
         return CategoryMapper.mapToCategoryDto(updateCategory);
     }
@@ -77,5 +84,11 @@ public class CategoryServiceImpl implements CategoryService {
     private Category checkingExistCategory(int catId) {
         return categoryRepository.findById(catId)
                 .orElseThrow(() -> new NotFoundException(String.format("Категория с id=%s не найдена", catId)));
+    }
+
+    private void checkingNameCategory(String name) {
+        if (categoryRepository.findFirstByName(name) != null) {
+            throw new ConflictException(String.format("Катигория с name = %s уже существует", name));
+        }
     }
 }

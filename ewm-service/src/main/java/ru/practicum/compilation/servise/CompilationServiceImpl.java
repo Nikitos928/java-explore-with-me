@@ -8,8 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.FromSizeRequest;
 import ru.practicum.compilation.dto.CompilationDto;
-import ru.practicum.compilation.dto.CompilationNewDto;
-import ru.practicum.compilation.dto.CompilationUpdateDto;
+import ru.practicum.compilation.dto.CompilationInputDto;
 import ru.practicum.compilation.mapper.CompilationMapper;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
@@ -43,7 +42,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Transactional
     @Override
-    public CompilationDto saveNewCompilation(CompilationNewDto compilationNewDto) {
+    public CompilationDto saveNewCompilation(CompilationInputDto compilationNewDto) {
         Compilation compilation = new Compilation();
         compilation.setPinned(compilationNewDto.getPinned());
         compilation.setTitle(compilationNewDto.getTitle());
@@ -56,7 +55,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Transactional
     @Override
-    public CompilationDto updateCompilation(int compId, CompilationUpdateDto compilationUpdateDto) {
+    public CompilationDto updateCompilation(int compId, CompilationInputDto compilationUpdateDto) {
         Compilation updateCompilation = checkingExistCompilation(compId);
 
         if (compilationUpdateDto.getPinned() != null) {

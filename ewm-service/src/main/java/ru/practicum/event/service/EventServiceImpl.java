@@ -12,11 +12,11 @@ import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.common.*;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
+import ru.practicum.event.dto.EventInputDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.EventUpdateDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
@@ -33,10 +33,7 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.common.StateAction.SEND_TO_REVIEW;
@@ -52,6 +49,7 @@ public class EventServiceImpl implements EventService {
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
     private final CategoryRepository categoryRepository;
+    private final CommentRepository commentRepository;
     private final HitClient hitClient;
     private static final String STATISTICS_APP = "evm-service";
 
@@ -83,6 +81,7 @@ public class EventServiceImpl implements EventService {
         if (text != null) {
             text = text.toLowerCase();
         }
+
         List<Event> events = eventRepository.getEventsWithSort(categories, start, end, text, paid, pageable);
 
         List<EventFullDto> eventFullDtos = makeEventFullDtoList(events);
@@ -125,6 +124,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
@@ -135,6 +135,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
@@ -148,7 +149,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto saveNewEvent(int userId, EventNewDto eventNewDto) {
+    public EventFullDto saveNewEvent(int userId, EventInputDto eventNewDto) {
         if (eventNewDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
             log.info("Дата и время события {} - не может быть раньше, чем через два часа от текущего момента",
                     eventNewDto.getEventDate());
@@ -171,7 +172,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventFullDto updatePrivateEvent(int userId, int eventId, EventUpdateDto eventUpdateDto) {
+    public EventFullDto updatePrivateEvent(int userId, int eventId, EventInputDto eventUpdateDto) {
         Event event = checkingExistEventByUserId(userId, eventId);
         if (eventUpdateDto.getEventDate() != null) {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2L))) {
@@ -204,13 +205,13 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
-
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
     @Transactional
     @Override
-    public EventFullDto updateAdminEvent(int eventId, EventUpdateDto eventUpdateDto) {
+    public EventFullDto updateAdminEvent(int eventId, EventInputDto eventUpdateDto) {
         Event event = checkingExistEvent(eventId);
 
         if (eventUpdateDto.getEventDate() != null && event.getPublishedOn() != null) {
@@ -227,6 +228,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDto = setConfRequestEvent(List.of(eventFullDto), List.of(event.getId())).get(0);
         eventFullDto = setViewsEvent(List.of(eventFullDto), List.of("/events/" + event.getId())).get(0);
+        eventFullDto.setComments(commentRepository.countAllByEventId(eventId));
         return eventFullDto;
     }
 
@@ -253,7 +255,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new ConflictException(String.format("Категория с id=%s не найдена", catId)));
     }
 
-    private void updateEvent(Event event, EventUpdateDto eventUpdateDto) {
+    private void updateEvent(Event event, EventInputDto eventUpdateDto) {
         if (eventUpdateDto.getEventDate() != null) {
             if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now())) {
                 log.info("Нельзя изменить дату события {} на уже наступившую.",
@@ -339,6 +341,7 @@ public class EventServiceImpl implements EventService {
 
         eventFullDtos = setConfRequestEvent(eventFullDtos, ids);
         eventFullDtos = setViewsEvent(eventFullDtos, uris);
+        eventFullDtos = setCommentsEvent(eventFullDtos, ids);
         return eventFullDtos;
     }
 
@@ -365,7 +368,7 @@ public class EventServiceImpl implements EventService {
         Map<String, List<HitDto>> statViewsMap = hitClient.getHits(minStart, maxEnd, uris, true)
                 .stream()
                 .collect(Collectors.groupingBy(HitDto::getUri));
-        List<EventFullDto> evetsSetViews = new ArrayList<>();
+
         for (EventFullDto event : eventFullDtos) {
             String key = "/events/" + event.getId();
             if (statViewsMap.get(key) != null) {
@@ -373,14 +376,30 @@ public class EventServiceImpl implements EventService {
             } else {
                 event.setViews(0L);
             }
-            evetsSetViews.add(event);
-
         }
-
-        return evetsSetViews;
+        return eventFullDtos;
     }
 
     private void setCountViews(EventFullDto eventFullDto, Long countViews) {
         eventFullDto.setViews(countViews);
     }
+
+    private List<EventFullDto> setCommentsEvent(List<EventFullDto> eventFullDtos, List<Integer> eventIds) {
+        Map<Integer, Integer> commentsMap;
+        if (!eventIds.isEmpty()) {
+            commentsMap = eventRepository.customFindMethod(eventIds);
+        } else {
+            commentsMap = new HashMap<>();
+        }
+        return eventFullDtos.stream()
+                .map(eventFullDto -> setComments(eventFullDto,
+                        commentsMap.getOrDefault(eventFullDto.getId(), 0)))
+                .collect(Collectors.toList());
+    }
+
+    private EventFullDto setComments(EventFullDto eventFullDto, int countComments) {
+        eventFullDto.setComments(countComments);
+        return eventFullDto;
+    }
+
 }

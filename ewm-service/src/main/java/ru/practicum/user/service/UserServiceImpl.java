@@ -2,12 +2,14 @@ package ru.practicum.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.common.FromSizeRequest;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.mapper.UserMapper;
@@ -38,10 +40,21 @@ public class UserServiceImpl implements UserService {
         return UserMapper.mapToListUserDto(users);
     }
 
-    @Transactional
+
     @Override
+    @Transactional
     public UserDto saveNewUser(UserDto userDto) {
-        User newUser = userRepository.save(UserMapper.mapToUser(userDto));
+        User newUser;
+        if (userRepository.findFirstByEmailOrName(userDto.getEmail(), userDto.getName()) != null) {
+            throw new ConflictException(String.format("Пользователь с email = %s или name = %s уже существует",
+                    userDto.getEmail(), userDto.getName()));
+        }
+        try {
+            newUser = userRepository.save(UserMapper.mapToUser(userDto));
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException(String.format("Пользователь с email = %s или name = %s уже существует",
+                    userDto.getEmail(), userDto.getName()));
+        }
         log.info("UserService:  Зарегистрирован новый пользователь: {}", newUser);
         return UserMapper.mapToUserDto(newUser);
     }
