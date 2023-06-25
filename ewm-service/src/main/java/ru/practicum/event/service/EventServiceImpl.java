@@ -389,24 +389,29 @@ public class EventServiceImpl implements EventService {
 
     private List<EventFullDto> setCommentsEvent(List<EventFullDto> eventFullDtos, List<Integer> eventIds) {
         StringBuilder listString = new StringBuilder();
-        for (int i = 0; i <= eventIds.size() - 1; i++) {
-            if (i == 0) {
-                listString.append("(").append(eventIds.get(i)).append(", ");
-            } else if (i == eventIds.size() - 1) {
-                listString.append(eventIds.get(i)).append(")");
-            } else {
-                listString.append(eventIds.get(i)).append(", ");
+        Map<Integer, Integer> commentsMap = new HashMap<>();
+        if (eventIds.size() == 1) {
+            listString.append("(").append(eventIds.get(0)).append(")");
+        } else {
+            for (int i = 0; i <= eventIds.size() - 1; i++) {
+                if (i == 0) {
+                    listString.append("(").append(eventIds.get(i)).append(", ");
+                } else if (i == eventIds.size() - 1) {
+                    listString.append(eventIds.get(i)).append(")");
+                } else {
+                    listString.append(eventIds.get(i)).append(", ");
+                }
             }
         }
 
-        String sql = "select event_id as event, count(id) as si  from comments where event_id in " + listString + " group by event_id";
-
-        List<EventIds> eventIds1 = new ArrayList<>(jdbcTemplate.query(sql, (rs, rowNom) -> new EventIds(rs.getInt("event"), rs.getInt("si"))));
-
-        Map<Integer, Integer> commentsMap = new HashMap<>();
-        for (EventIds ids : eventIds1) {
-            commentsMap.put(ids.getId(), ids.getSize());
+        if (!listString.toString().isEmpty()) {
+            String sql = "select event_id as event, count(id) as si  from comments where event_id in " + listString + " group by event_id";
+            List<EventIds> eventIds1 = new ArrayList<>(jdbcTemplate.query(sql, (rs, rowNom) -> new EventIds(rs.getInt("event"), rs.getInt("si"))));
+            for (EventIds ids : eventIds1) {
+                commentsMap.put(ids.getId(), ids.getSize());
+            }
         }
+
         return eventFullDtos.stream()
                 .map(eventFullDto -> setComments(eventFullDto,
                         commentsMap.getOrDefault(eventFullDto.getId(), 0)))
