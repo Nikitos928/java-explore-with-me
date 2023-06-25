@@ -6,13 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.mapper.CategoryMapper;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
-import ru.practicum.comment.model.Comment;
 import ru.practicum.comment.repository.CommentRepository;
 import ru.practicum.common.*;
 import ru.practicum.event.dto.EventFullDto;
@@ -20,6 +20,7 @@ import ru.practicum.event.dto.EventInputDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.EventIds;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
@@ -34,10 +35,7 @@ import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.practicum.common.StateAction.SEND_TO_REVIEW;
@@ -55,6 +53,7 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final CommentRepository commentRepository;
     private final HitClient hitClient;
+    private final JdbcTemplate jdbcTemplate;
     private static final String STATISTICS_APP = "evm-service";
 
     @Override
@@ -389,12 +388,28 @@ public class EventServiceImpl implements EventService {
     }
 
     private List<EventFullDto> setCommentsEvent(List<EventFullDto> eventFullDtos, List<Integer> eventIds) {
-        Map<Integer, List<Comment>> commentsMap = commentRepository.findCommentByEventIdIn(eventIds)
-                .stream()
-                .collect(Collectors.groupingBy(Comment::getIdEvent));
+        StringBuilder listString = new StringBuilder();
+        for (int i = 0; i <= eventIds.size() - 1; i++) {
+            if (i == 0) {
+                listString.append("(").append(eventIds.get(i)).append(", ");
+            } else if (i == eventIds.size() - 1) {
+                listString.append(eventIds.get(i)).append(")");
+            } else {
+                listString.append(eventIds.get(i)).append(", ");
+            }
+        }
+
+        String sql = "select event_id as event, count(id) as si  from comments where event_id in " + listString + " group by event_id";
+
+        List<EventIds> eventIds1 = new ArrayList<>(jdbcTemplate.query(sql, (rs, rowNom) -> new EventIds(rs.getInt("event"), rs.getInt("si"))));
+
+        Map<Integer, Integer> commentsMap = new HashMap<>();
+        for (EventIds ids : eventIds1) {
+            commentsMap.put(ids.getId(), ids.getSize());
+        }
         return eventFullDtos.stream()
                 .map(eventFullDto -> setComments(eventFullDto,
-                        commentsMap.getOrDefault(eventFullDto.getId(), Collections.emptyList()).size()))
+                        commentsMap.getOrDefault(eventFullDto.getId(), 0)))
                 .collect(Collectors.toList());
     }
 
@@ -402,4 +417,5 @@ public class EventServiceImpl implements EventService {
         eventFullDto.setComments(countComments);
         return eventFullDto;
     }
+
 }
