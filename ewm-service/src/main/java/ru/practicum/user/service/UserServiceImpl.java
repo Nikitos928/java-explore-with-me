@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
+    @Transactional
     public UserDto saveNewUser(UserDto userDto) {
         User newUser;
         if (userRepository.findFirstByEmailOrName(userDto.getEmail(), userDto.getName()) != null) {
